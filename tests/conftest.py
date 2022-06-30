@@ -1,5 +1,5 @@
 from pytest import fixture
-from distutils import dir_util
+import shutil
 import os
 from pathlib import Path
 
@@ -15,6 +15,6 @@ def test_data(tmpdir, request):
     test_dir, _ = os.path.splitext(filename)
 
     if os.path.isdir(test_dir):
-        dir_util.copy_tree(test_dir, str(tmpdir))
+        shutil.copytree(test_dir, str(tmpdir))
 
     return Path(tmpdir)
