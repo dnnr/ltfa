@@ -1,0 +1,29 @@
+INFO: SomeSavingsAcc: Weird txn is neutral doesn't point to an Account: 2009-12-01, € 1000.0
+INFO: SomeSavingsAcc: Final balance after 121 txns: 2019-12-01, € 1647.01
+INFO: 8y ewm final values:
+INFO: 	invested     = 1418 €
+INFO: 	gains p.a.   = 71 €
+INFO: 	returns p.a. = 5.00%
+INFO: 4y ewm final values:
+INFO: 	invested     = 1499 €
+INFO: 	gains p.a.   = 75 €
+INFO: 	returns p.a. = 5.00%
+INFO: 2y ewm final values:
+INFO: 	invested     = 1566 €
+INFO: 	gains p.a.   = 78 €
+INFO: 	returns p.a. = 5.00%
+INFO: Statistics over all time (10 years):
+INFO: 	Avg. invested amount: 1294 €
+INFO: 	Total capital gains: 647 €
+INFO: 	Avg. capital gains (p.a.): 65 €
+INFO: 	Avg. returns (p.a.): 5.00%
+INFO: Return rate in 2010: 5.00% (51 € gains on 1028 € invested)
+INFO: Return rate in 2011: 5.00% (54 € gains on 1080 € invested)
+INFO: Return rate in 2012: 5.00% (57 € gains on 1135 € invested)
+INFO: Return rate in 2013: 5.00% (60 € gains on 1194 € invested)
+INFO: Return rate in 2014: 5.00% (63 € gains on 1255 € invested)
+INFO: Return rate in 2015: 5.00% (66 € gains on 1319 € invested)
+INFO: Return rate in 2016: 5.00% (69 € gains on 1386 € invested)
+INFO: Return rate in 2017: 5.00% (73 € gains on 1457 € invested)
+INFO: Return rate in 2018: 5.00% (77 € gains on 1532 € invested)
+INFO: Return rate past 1y: 5.00% (80 € gains on 1604 € invested)

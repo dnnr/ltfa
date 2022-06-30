@@ -1,0 +1,40 @@
+INFO: SomeSavingsAcc: Weird txn is neutral doesn't point to an Account: 2010-12-31, € 1000.0
+INFO: SomeSavingsAcc: Final balance after 21 txns: 2030-12-31, € 1082.94
+INFO: 8y ewm final values:
+INFO: 	invested     = 1271 €
+INFO: 	gains p.a.   = -41 €
+INFO: 	returns p.a. = -3.26%
+INFO: 4y ewm final values:
+INFO: 	invested     = 1203 €
+INFO: 	gains p.a.   = -47 €
+INFO: 	returns p.a. = -3.93%
+INFO: 2y ewm final values:
+INFO: 	invested     = 1156 €
+INFO: 	gains p.a.   = -46 €
+INFO: 	returns p.a. = -4.00%
+INFO: Statistics over all time (20 years):
+INFO: 	Avg. invested amount: 1311 €
+INFO: 	Total capital gains: 83 €
+INFO: 	Avg. capital gains (p.a.): 4 €
+INFO: 	Avg. returns (p.a.): 0.32%
+INFO: Return rate in 2011: 5.00% (50 € gains on 1000 € invested)
+INFO: Return rate in 2012: 5.00% (52 € gains on 1050 € invested)
+INFO: Return rate in 2013: 5.00% (55 € gains on 1103 € invested)
+INFO: Return rate in 2014: 5.00% (58 € gains on 1158 € invested)
+INFO: Return rate in 2015: 5.00% (61 € gains on 1216 € invested)
+INFO: Return rate in 2016: 5.00% (64 € gains on 1276 € invested)
+INFO: Return rate in 2017: 5.00% (67 € gains on 1340 € invested)
+INFO: Return rate in 2018: 5.00% (70 € gains on 1407 € invested)
+INFO: Return rate in 2019: 5.00% (74 € gains on 1478 € invested)
+INFO: Return rate in 2020: 5.00% (78 € gains on 1552 € invested)
+INFO: Return rate in 2021: -4.00% (-65 € gains on 1629 € invested)
+INFO: Return rate in 2022: -4.00% (-63 € gains on 1564 € invested)
+INFO: Return rate in 2023: -4.00% (-60 € gains on 1501 € invested)
+INFO: Return rate in 2024: -4.00% (-58 € gains on 1441 € invested)
+INFO: Return rate in 2025: -4.00% (-55 € gains on 1383 € invested)
+INFO: Return rate in 2026: -4.00% (-53 € gains on 1328 € invested)
+INFO: Return rate in 2027: -4.00% (-51 € gains on 1275 € invested)
+INFO: Return rate in 2028: -4.00% (-49 € gains on 1224 € invested)
+INFO: Return rate in 2029: -4.00% (-47 € gains on 1175 € invested)
+INFO: Return rate in 2030: -4.00% (-45 € gains on 1128 € invested)
+INFO: Return rate past 1y: -4.00% (-45 € gains on 1128 € invested)

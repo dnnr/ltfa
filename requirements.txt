@@ -1,0 +1,13 @@
+appdirs~=1.4
+bokeh~=2.4
+matplotlib~=3.5
+mypy~=0.961
+pandas~=1.4
+python-dateutil~=2.8
+pyyaml~=6.0
+simplejson~=3.17
+testfixtures~=6.18.5
+types-PyYAML~=6.0
+types-appdirs~=1.4
+types-python-dateutil~=2.8
+types-simplejson~=3.17
