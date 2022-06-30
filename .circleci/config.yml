@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@1.5.0
+  docker: circleci/docker@2.1.2
 
 jobs:
   build-and-test:
@@ -35,3 +36,5 @@ workflows:
     jobs:
       - build-and-test
       - check-single-commit
+      - docker/hadolint:
+          dockerfiles: Dockerfile
