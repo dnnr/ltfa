@@ -3,6 +3,7 @@ bokeh~=2.4
 matplotlib~=3.5
 mypy~=0.961
 pandas~=1.4
+pytest~=7.1
 python-dateutil~=2.8
 pyyaml~=6.0
 simplejson~=3.17
