@@ -25,8 +25,8 @@ jobs:
       - run:
           command: git branch -a
       - run:
-          name: Check if there is only a single commit after origin/HEAD
-          command: test $(git rev-list HEAD ^origin/HEAD | wc -l) -eq 1
+          name: Check maximum of one commit after origin/HEAD
+          command: test $(git rev-list HEAD ^origin/HEAD | wc -l) -le 1
 
 workflows:
   ci:
