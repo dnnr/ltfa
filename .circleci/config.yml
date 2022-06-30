@@ -15,7 +15,21 @@ jobs:
           name: Run tests
           command: pytest
 
+  check-single-commit:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - run:
+          command: git remote -v
+      - run:
+          command: git branch -a
+      - run:
+          name: Check if there is only a single commit after origin/HEAD
+          command: test $(git rev-list HEAD ^origin/HEAD | wc -l) -eq 1
+
 workflows:
   ci:
     jobs:
       - build-and-test
+      - check-single-commit
