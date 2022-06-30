@@ -26,7 +26,9 @@ jobs:
           command: git branch -a
       - run:
           name: Check maximum of one commit after origin/HEAD
-          command: test $(git rev-list HEAD ^origin/HEAD | wc -l) -le 1
+          command: |
+            git rev-list HEAD ^origin/HEAD
+            test $(git rev-list HEAD ^origin/HEAD | wc -l) -le 1
 
 workflows:
   ci:
