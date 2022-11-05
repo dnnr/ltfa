@@ -459,7 +459,7 @@ def expand_mask(mask) -> pd.DataFrame:
     return ret
 
 
-def prepare_figure(title, y_axis_label, y_tick_format) -> bk.plotting.Figure:
+def prepare_figure(title, y_axis_label, y_tick_format) -> bk.plotting.figure:
     common_figure_kwargs = dict(
         tools="pan,box_zoom,reset,save,wheel_zoom",
         active_scroll="wheel_zoom",
