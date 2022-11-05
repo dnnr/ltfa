@@ -10,7 +10,6 @@ import itertools
 import pandas as pd
 from types import SimpleNamespace
 from typing import Any
-import pandas as pd
 
 from ltfa.account import Account, Transaction
 from ltfa import plotting_bokeh
