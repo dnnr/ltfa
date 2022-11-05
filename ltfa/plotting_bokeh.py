@@ -365,13 +365,14 @@ def add_capital_returns_plot(figure, accounts, annotations, analysis) -> None:
         add_annotations(figure, annotations['capgains'], annotations_guideline, 0.15)
 
 
-
 def add_spending_and_savings_plot(figure, accounts, accounts_stacked, annotations, analysis) -> None:
     ewm_years = 2
+    ewm_years_longterm = 7
     colors = color_gen()
     salary_color = next(colors)
     spending_color = next(colors)
     savings_color = next(colors)
+    spending_longterm_color = next(colors)
 
     all_plotted_data = []
 
@@ -379,6 +380,37 @@ def add_spending_and_savings_plot(figure, accounts, accounts_stacked, annotation
         # Really nothing to plot
         return
 
+    savings_ewm, salary_ewm, salary_monthly_sum, spending_estimate = calc_spending_and_savings_ewms(analysis, ewm_years)
+    _, _, _, spending_estimate_longterm = calc_spending_and_savings_ewms(analysis, ewm_years_longterm)
+
+    if not analysis.salary.empty:
+        figure.line(source=salary_monthly_sum, x='date', y='value', legend_label='Actual salary per month', color=salary_color, line_width=1.3)
+        figure.circle(source=salary_monthly_sum, x='date', y='value', size=6, color=salary_color, legend_label='Actual salary per month', fill_alpha=0)
+        all_plotted_data.append(salary_monthly_sum)
+
+        figure.line(source=salary_ewm, x='date', y='value', legend_label=f'Salary ({ewm_years}y EWM)', color=salary_color, line_width=2)
+        all_plotted_data.append(salary_ewm)
+
+        figure.line(source=spending_estimate, x='date', y='value', color=spending_color, legend_label=f'Estimated monthly spending ({ewm_years}y EWM)', line_width=1.3)
+        figure.varea(source=spending_estimate, x='date', y1=0, y2='value', color=spending_color, legend_label=f'Estimated monthly spending ({ewm_years}y EWM)', fill_alpha=0.5)
+        all_plotted_data.append(spending_estimate)
+
+        figure.line(source=spending_estimate_longterm, x='date', y='value', color=spending_longterm_color, legend_label=f'Estimated monthly spending ({ewm_years_longterm}y EWM)', line_width=1.1)
+        all_plotted_data.append(spending_estimate_longterm)
+
+    figure.line(source=savings_ewm, x='date', y='value', color=savings_color, legend_label='Monthly savings (2y EWM)', line_width=1.3, line_alpha=0.8)
+    all_plotted_data.append(savings_ewm)
+
+    # Find the "top edge" of all plotted data to use as guideline for the annotations:
+    annotations_guideline = pd.concat([df.resample('1D').interpolate() for df in all_plotted_data]).groupby(level=0).max()
+    if 'spending' in annotations:
+        add_annotations(figure, annotations['spending'], annotations_guideline, 0.15, color=spending_color, legend_label='Spending annotations')
+    if 'salary' in annotations:
+        add_annotations(figure, annotations['salary'], annotations_guideline, 0.15, color=salary_color, legend_label='Salary annotations')
+
+
+def calc_spending_and_savings_ewms(analysis, ewm_years):
+    """ Helper to compute spending and savings plots for a given EWM span """
     # Compute EWM over savings (suppressing the first 30 days, which are usually somewhat distorted/overweighted)
     savings_ewm = analysis.savings.ewm(span=ewm_years * 365, min_periods=30).mean().dropna() * 30
 
@@ -405,26 +437,9 @@ def add_spending_and_savings_plot(figure, accounts, accounts_stacked, annotation
 
         spending_estimate = spending_estimate.dropna()
 
-        figure.line(source=salary_monthly_sum, x='date', y='value', legend_label='Actual salary per month', color=salary_color, line_width=1.3)
-        figure.circle(source=salary_monthly_sum, x='date', y='value', size=6, color=salary_color, legend_label='Actual salary per month', fill_alpha=0)
-        all_plotted_data.append(salary_monthly_sum)
+        return savings_ewm, salary_ewm, salary_monthly_sum, spending_estimate
 
-        figure.line(source=salary_ewm, x='date', y='value', legend_label=f'Salary ({ewm_years}y EWM)', color=salary_color, line_width=2)
-        all_plotted_data.append(salary_ewm)
-
-        figure.line(source=spending_estimate, x='date', y='value', color=spending_color, legend_label=f'Estimated monthly spending ({ewm_years}y EWM)', line_width=1.3)
-        figure.varea(source=spending_estimate, x='date', y1=0, y2='value', color=spending_color, legend_label=f'Estimated monthly spending ({ewm_years}y EWM)', fill_alpha=0.5)
-        all_plotted_data.append(spending_estimate)
-
-    figure.line(source=savings_ewm, x='date', y='value', color=savings_color, legend_label='Monthly savings (2y EWM)', line_width=1.3, line_alpha=0.8)
-    all_plotted_data.append(savings_ewm)
-
-    # Find the "top edge" of all plotted data to use as guideline for the annotations:
-    annotations_guideline = pd.concat([df.resample('1D').interpolate() for df in all_plotted_data]).groupby(level=0).max()
-    if 'spending' in annotations:
-        add_annotations(figure, annotations['spending'], annotations_guideline, 0.15, color=spending_color, legend_label='Spending annotations')
-    if 'salary' in annotations:
-        add_annotations(figure, annotations['salary'], annotations_guideline, 0.15, color=salary_color, legend_label='Salary annotations')
+    return savings_ewm, None, None, None
 
 
 def expand_mask(mask) -> pd.DataFrame:
