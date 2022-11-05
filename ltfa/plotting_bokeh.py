@@ -483,13 +483,6 @@ def prepare_figure(title, y_axis_label, y_tick_format) -> bk.plotting.figure:
 
 
 def makeplot_balances(accounts, annotations, analysis, file) -> None:
-    common_figure_kwargs = dict(
-        tools="pan,box_zoom,reset,save,wheel_zoom",
-        active_scroll="wheel_zoom",
-        x_axis_type="datetime",
-        sizing_mode="stretch_width",
-    )
-
     # Note: NumeralTickFormatter doesn't support currency signs other than $, unfortunately. (bokeh-2.4.2)
     figure1 = prepare_figure(title='Balance', y_axis_label='Amount', y_tick_format='0a')
     figure2 = prepare_figure(title='Capital returns (% p.a.)', y_axis_label='Percentage', y_tick_format='0.00%')
