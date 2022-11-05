@@ -113,10 +113,15 @@ class Analysis():
             salary_mask = spending != spending
 
         # Apply mask to all spending transactions, get salary dataframe
-        self.salary = spending.where(salary_mask).dropna()
+        salary = spending.where(salary_mask).dropna()
 
-        for row in self.salary.itertuples():
+        for row in salary.itertuples():
             logging.debug(f'Classifying as salary: {row}')
+
+        # Keep only required columns (some downstream steps choke on the strings and boolean data):
+        salary = salary[['value']]
+
+        self.salary = salary
 
 
     def analyze_capgains(self, accounts) -> None:
