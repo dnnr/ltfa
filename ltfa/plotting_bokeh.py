@@ -520,7 +520,7 @@ def makeplot_balances(accounts, annotations, analysis, file) -> None:
         figure.legend.click_policy = 'hide'
 
     plot = bk.layouts.gridplot(figures_to_plot, ncols=1, sizing_mode="stretch_both", merge_tools=True)
-    bkp.output_file(file, title='ltfa')
+    bkp.output_file(file, title='ltfa ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     bkp.save(plot, resources=CustomResources(mode='inline'))
 
 
