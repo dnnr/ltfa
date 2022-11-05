@@ -102,12 +102,13 @@ def stack_dataframes(accounts_df) -> list[pd.DataFrame]:
                 continue
             day_before = window.index[1] - datetime.timedelta(days=1)
             if day_before not in df.dailies.index:
-                # Copy the first item in the window, but clear the "value" and
-                # "txns" columns (only if present, because it's obsolete and being removed):
-                df.dailies.at[day_before] = window.iloc[0]
-                df.dailies.value.at[day_before] = np.nan
-                if 'txns' in df.dailies.columns:
-                    df.dailies.txns.at[day_before] = np.nan
+                # Copy the first item in the window, but clear the "value" column:
+                # (Note: We used to used .at[] instead of .loc[] here but it
+                # stopped working in pandas 1.5.0. Weirdly, using .loc[] runs
+                # much slower! Fun fact: we spend like half the runtime just in
+                # these two lines, I think.)
+                df.dailies.loc[day_before] = window.iloc[0]
+                df.dailies.value.loc[day_before] = np.nan
 
         # Sort entire frame because new values are inserted at the end
         df.dailies.sort_index(inplace=True)
