@@ -527,7 +527,7 @@ def makeplot_balances(accounts, annotations, analysis, file) -> None:
 
 class CustomResources(bk.resources.Resources):
     @property
-    def css_raw(self) -> str:
+    def css_raw(self) -> list[str]:
         return super().css_raw + [
             """
             .bk-root .bk-tooltip>div {
