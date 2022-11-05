@@ -517,7 +517,10 @@ def makeplot_balances(accounts, annotations, analysis, file) -> None:
         figure.legend.location = 'top_left'
         figure.legend.click_policy = 'hide'
 
-    plot = bk.layouts.gridplot(figures_to_plot, ncols=1, sizing_mode="stretch_both", merge_tools=True)
+    # Note: gridplot got broken in 3.0.0 (still is in 3.0.1). It didn't draw
+    # correctly. I switched to column() as a workaround, but it doesn't have
+    # the merge_tools feature. TODO: Switch back as soon as possible.
+    plot = bk.layouts.column(figures_to_plot, sizing_mode='stretch_both')
     bkp.output_file(file, title='ltfa ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     bkp.save(plot, resources=CustomResources(mode='inline'))
 
