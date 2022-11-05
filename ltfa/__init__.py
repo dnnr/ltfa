@@ -117,7 +117,11 @@ def accounts_to_dataframes(accounts) -> list[pd.DataFrame]:
         # Turn account transactions into dataframe
         txns = pd.DataFrame(
             startat + [(pd.to_datetime(txn.date), float(txn.value), getattr(txn, 'peername', 'n/a'), txn.subject, txn.isneutral) for txn in account.txns] + endat,
-            columns=['date', 'value', 'peername', 'subject', 'isneutral'])
+            columns=['date', 'value', 'peername', 'subject', 'isneutral']).astype(
+                {
+                    'isneutral': 'boolean',
+                }
+            )
         txns.set_index('date', inplace=True)
 
         # Sum up transactions of each day
