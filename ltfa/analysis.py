@@ -115,6 +115,10 @@ class Analysis():
         # Apply mask to all spending transactions, get salary dataframe
         self.salary = spending.where(salary_mask).dropna()
 
+        for row in self.salary.itertuples():
+            logging.debug(f'Classifying as salary: {row}')
+
+
     def analyze_capgains(self, accounts) -> None:
         # Relevant base metrics for plotting capital gains:
         #  * invested amount (equals balance, already known)
