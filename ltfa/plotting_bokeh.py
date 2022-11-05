@@ -130,8 +130,8 @@ def add_balances_plot(figure, accounts, accounts_stacked, annotations, analysis)
         #  lighterer_color = bk.colors.RGB(*[x * 255 for x in matplotlib.colors.to_rgb(this_color)]).lighten(0.3)
 
         this_color = next(colors)
-        lighter_color = bk.colors.RGB(*[x * 255 for x in color_scale_lightness(matplotlib.colors.to_rgb(this_color), 1.4)])
-        lighterer_color = bk.colors.RGB(*[x * 255 for x in color_scale_lightness(matplotlib.colors.to_rgb(this_color), 1.55)])
+        lighter_color = bk.colors.RGB(*[int(x * 255) for x in color_scale_lightness(matplotlib.colors.to_rgb(this_color), 1.4)])
+        lighterer_color = bk.colors.RGB(*[int(x * 255) for x in color_scale_lightness(matplotlib.colors.to_rgb(this_color), 1.55)])
 
         dailies = account.dailies
 
