@@ -499,12 +499,12 @@ def makeplot_balances(accounts, annotations, analysis, file) -> None:
     figure2.x_range = figure1.x_range
     figure3.x_range = figure1.x_range
 
-    figures_to_plot = [figure1]
 
     # stack_dataframes() has side-effects on the input, so we can only do it once
     accounts_stacked = stack_dataframes(accounts)
 
     add_balances_plot(figure1, accounts, accounts_stacked, annotations, analysis)
+    figures_to_plot = [figure1]
 
     if analysis.has_capgains:
         add_invest_and_gains_plot(figure1, accounts, annotations, analysis)
