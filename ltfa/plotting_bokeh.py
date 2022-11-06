@@ -91,27 +91,34 @@ def stack_dataframes(accounts_df) -> list[pd.DataFrame]:
 
         ret.append(account_df)
 
-    for df in ret:
-        # Fake a step-wise plot as a workaround for bokeh not supporting
-        # step-wise vareas (see https://github.com/bokeh/bokeh/issues/12062):
-        # For each entry, insert another one on the day right before (unless it
-        # already exists) to repeat/pad the previous value.
-        for window in df.dailies.rolling(window=2, min_periods=0):
+    def fake_step_post_maker(df):
+        """
+        Fake a step-wise plot as a workaround for bokeh not supporting
+        step-wise vareas (see https://github.com/bokeh/bokeh/issues/12062): For
+        each entry, insert another one on the day right before (unless it
+        already exists) to repeat/pad the previous value.
+        """
+        for window in df.rolling(window=2, min_periods=0):
+            yield (window.index[0], window.iloc[0])
             # Only consider full windows
             if len(window) != 2:
                 continue
-            day_before = window.index[1] - datetime.timedelta(days=1)
-            if day_before not in df.dailies.index:
-                # Copy the first item in the window, but clear the "value" column:
-                # (Note: We used to used .at[] instead of .loc[] here but it
-                # stopped working in pandas 1.5.0. Weirdly, using .loc[] runs
-                # much slower! Fun fact: we spend like half the runtime just in
-                # these two lines, I think.)
-                df.dailies.loc[day_before] = window.iloc[0]
-                df.dailies.value.loc[day_before] = np.nan
 
-        # Sort entire frame because new values are inserted at the end
-        df.dailies.sort_index(inplace=True)
+            day_before = window.index[1] - datetime.timedelta(days=1)
+            # If the date already has a row, we cannot (need not) insert a fake row
+            if day_before != window.index[0]:
+                # Copy the first item in the window, but clear the "value" column:
+                fake_in = window.iloc[0].copy()
+                fake_in.value = np.nan
+                yield (day_before, fake_in)
+        else:
+            # The very last row:
+            yield (window.index[1], window.iloc[1])
+
+    for account in ret:
+        df_step_post = pd.DataFrame.from_dict(dict(fake_step_post_maker(account.dailies)), orient='index')
+        df_step_post.index.name = 'date'
+        account.dailies = df_step_post
 
     return ret
 
