@@ -18,6 +18,10 @@ def main():
 
 if __name__ == '__main__':
     try:
+        # Use this for profiling:
+        #  import cProfile
+        #  cProfile.run('main()', filename='ltfa.profile', sort='cumtime')
+
         sys.exit(main())
     except LtfaError as e:
         logging.error(e)
