@@ -1,5 +1,5 @@
 appdirs~=1.4.4
-bokeh~=3.0.1
+bokeh==2.4.3
 mypy~=0.982
 pandas~=1.5.1
 pytest~=7.1
