@@ -476,11 +476,8 @@ def prepare_figure(title, y_axis_label, y_tick_format) -> bk.plotting.figure:
 
     figure = bkp.figure(title=title, x_axis_label="Date", y_axis_label=y_axis_label, **common_figure_kwargs)
 
-    figure.left[0].formatter = bk.models.formatters.NumeralTickFormatter(format=y_tick_format)
-
     figure.add_layout(bk.models.LinearAxis(), 'right')
-    figure.right[0].formatter = bk.models.formatters.NumeralTickFormatter(format=y_tick_format)
-
+    figure.yaxis.formatter = bk.models.formatters.NumeralTickFormatter(format=y_tick_format)
     figure.xaxis.formatter=bk.models.formatters.DatetimeTickFormatter(
         days=["%Y-%m-%d"],
         months=["%b %Y"]
