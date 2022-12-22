@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 import pandas as pd
 import re
 import functools
+from typing import Optional
 
 class Analysis():
     def __init__(self, accounts: list, salary_matchers: list) -> None:
@@ -15,7 +16,7 @@ class Analysis():
         self.classify_salary(accounts, salary_matchers)
         self.analyze_capgains(accounts)
 
-    def get_averaged_capgains(self, ewm_span_years: float = None) -> SimpleNamespace:
+    def get_averaged_capgains(self, ewm_span_years: Optional[float] = None) -> SimpleNamespace:
         if ewm_span_years:
             mangler = lambda x: x.ewm(span=ewm_span_years * 365).mean()
         else:
