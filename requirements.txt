@@ -1,7 +1,7 @@
 appdirs~=1.4.4
 bokeh==2.4.3
 mypy==0.991
-pandas~=1.5.1
+pandas==1.5.2
 pytest~=7.1
 python-dateutil~=2.8
 PyYAML~=6.0
