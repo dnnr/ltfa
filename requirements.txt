@@ -12,4 +12,7 @@ types-appdirs~=1.4
 types-python-dateutil~=2.8
 types-simplejson~=3.17
 
+# Using pre-1.24 numpy avoids deprecation warnings with pre-3.x.x bokeh
+numpy~=1.23.5
+
 matplotlib~=3.5
