@@ -1,5 +1,5 @@
 appdirs~=1.4.4
-bokeh==2.4.3
+bokeh==3.0.3
 mypy==0.991
 pandas==1.5.2
 pytest~=7.1
@@ -13,7 +13,7 @@ types-python-dateutil~=2.8
 types-simplejson~=3.17
 pytest~=7.2.0
 
-# Using pre-1.24 numpy avoids deprecation warnings with pre-3.x.x bokeh
+# Using pre-1.24 numpy avoids deprecation warnings bokeh
 numpy~=1.23.5
 
 matplotlib~=3.5
