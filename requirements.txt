@@ -4,7 +4,7 @@ mypy==0.991
 pandas~=1.5.1
 pytest~=7.1
 python-dateutil~=2.8
-pyyaml~=6.0
+PyYAML~=6.0
 simplejson~=3.17
 testfixtures~=7.0.3
 types-PyYAML~=6.0
