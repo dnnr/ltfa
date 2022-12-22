@@ -478,9 +478,10 @@ def prepare_figure(title, y_axis_label, y_tick_format) -> bk.plotting.figure:
 
     figure.add_layout(bk.models.LinearAxis(), 'right')
     figure.yaxis.formatter = bk.models.formatters.NumeralTickFormatter(format=y_tick_format)
+
     figure.xaxis.formatter=bk.models.formatters.DatetimeTickFormatter(
-        days=["%Y-%m-%d"],
-        months=["%b %Y"]
+        days="%Y-%m-%d",
+        months="%b %Y"
     )
 
     return figure
