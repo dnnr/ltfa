@@ -49,7 +49,7 @@ class Account:
         stillnegative = False
         for t in self.txns:
             if t.balance < 0 and not stillnegative:
-                logging.warning("{}: Negative balance after: {}".format(self.name, t))
+                logging.warning(f'{self.name}: Negative balance of {t.balance} after: {t}')
             stillnegative = t.balance < 0
 
     def stage3(self) -> None:
