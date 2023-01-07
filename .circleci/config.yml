@@ -8,17 +8,21 @@ orbs:
 jobs:
   build-and-test:
     docker:
-      - image: cimg/python:3.10.2
+      - image: cimg/python:3.9.16
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+      - run:
+          name: Install dependencies
+          command: pipenv install -v --categories "packages dev-packages test"
+      - run:
+          name: Verify Pipfile.lock
+          command: pipenv verify
       - run:
           name: Run tests
-          command: pytest
+          command: pipenv run pytest
       - run:
           name: Run mypy
-          command: mypy --ignore-missing-imports ltfa
+          command: pipenv run mypy --ignore-missing-imports ltfa
 
   check-single-commit:
     docker:
