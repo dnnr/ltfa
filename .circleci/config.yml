@@ -13,7 +13,7 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: pipenv install -v --categories "packages dev-packages test"
+          command: pipenv sync -v --categories "packages dev-packages test"
       - run:
           name: Verify Pipfile.lock
           command: pipenv verify
