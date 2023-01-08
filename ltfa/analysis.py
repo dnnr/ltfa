@@ -205,26 +205,29 @@ class Analysis():
         self.gains = gains
 
 
-    def print_capgains_analysis(self) -> None:
+    def print_capgains_analysis(self, file) -> None:
+        def p(s):
+            return print(s, file=file)
+
         for i in (8, 4, 2):
             ret = self.get_averaged_capgains(ewm_span_years=i)
 
-            logging.info("{}y ewm final values:".format(i))
-            logging.info("\tinvested     = {:.0f} €".format(ret.totalinvest.totalinvest[-1]))
-            logging.info("\tgains p.a.   = {:.0f} €".format(ret.gainspa.gains[-1]))
-            logging.info("\treturns p.a. = {:.2%}".format(ret.returns.returns[-1]))
+            p("{}y ewm final values:".format(i))
+            p("\tinvested     = {:.0f} €".format(ret.totalinvest.totalinvest[-1]))
+            p("\tgains p.a.   = {:.0f} €".format(ret.gainspa.gains[-1]))
+            p("\treturns p.a. = {:.2%}".format(ret.returns.returns[-1]))
 
         # Overall results (annualized) up to $now:
         overall = self.get_averaged_capgains()
 
         period = daycount_tostring((self.capgains_endoftime - self.capgains_beginningoftime).days)
-        logging.info("Statistics over all time ({}):".format(period))
-        logging.info("\tAvg. invested amount: {:.0f} €".format(overall.totalinvest.totalinvest[-1]))
-        logging.info("\tTotal capital gains: {:.0f} €".format(self.gains.gains.sum()))
-        logging.info("\tAvg. capital gains (p.a.): {:.0f} €".format(overall.gainspa.gains[-1]))
+        p("Statistics over all time ({}):".format(period))
+        p("\tAvg. invested amount: {:.0f} €".format(overall.totalinvest.totalinvest[-1]))
+        p("\tTotal capital gains: {:.0f} €".format(self.gains.gains.sum()))
+        p("\tAvg. capital gains (p.a.): {:.0f} €".format(overall.gainspa.gains[-1]))
         # Note: Compounding is implicitly part of this metric because we look
         # at the actual avg. invested amount.
-        logging.info("\tAvg. returns (p.a.): {:.2%}".format(overall.returns.returns[-1]))
+        p("\tAvg. returns (p.a.): {:.2%}".format(overall.returns.returns[-1]))
 
 
         # Discrete, cumulated stats for each calendar year ('A' means year-end):
@@ -242,7 +245,7 @@ class Analysis():
 
             gains = item['gains']
             invested = item['totalinvest']
-            logging.info("Return rate in {}: {:.2%} ({:.0f} € gains on {:.0f} € invested)".format(
+            p("Return rate in {}: {:.2%} ({:.0f} € gains on {:.0f} € invested)".format(
                 date.year, gains / invested, gains, invested
                 ))
 
@@ -257,7 +260,7 @@ class Analysis():
             invested_yoy = self.totalinvest[one_year_before : self.capgains_endoftime].mean().totalinvest
             gains_yoy = self.gains[one_year_before : self.capgains_endoftime].sum().gains
 
-            logging.info('Return rate past 1y: {:.2%} ({:.0f} € gains on {:.0f} € invested)'.format(
+            p('Return rate past 1y: {:.2%} ({:.0f} € gains on {:.0f} € invested)'.format(
                 gains_yoy / invested_yoy, gains_yoy, invested_yoy
                 ))
         stats_for_yoy()

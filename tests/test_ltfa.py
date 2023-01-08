@@ -22,23 +22,33 @@ def test_real_data_snapshot(tmpdir, request, scenario):
     scenario_dir = Path(__file__).parent / 'scenarios' / scenario
     assert scenario_dir.is_dir()
 
-    with open(scenario_dir / f'{scenario}.log', "r") as logfh:
-        expected_log = logfh.readlines()
+    with open(scenario_dir / f'{scenario}.log', "r") as fh:
+        # Transform log into format that matches LogCapture:
+        expected_log = [("root", *l.rstrip().split(": ", 1)) for l in fh.readlines()]
 
-    # Transform log into format that matches LogCapture:
-    expected_log = [("root", *l.rstrip().split(": ", 1)) for l in expected_log]
+    expected_investment_report = scenario_dir / f'{scenario}.investment_report.txt'
+
+    bokeh_html = tmpdir / 'bokeh.html'
+    assert not bokeh_html.exists()
+
+    investment_report = tmpdir / 'investment_report.txt'
+    assert not investment_report.exists()
 
     args = ltfa.parse_args([
-        "--config", str(scenario_dir / f'{scenario}.conf'),
-        '--output-dir', str(tmpdir),
+        '--config', str(scenario_dir / f'{scenario}.conf'),
+        '--bokeh', str(bokeh_html),
+        '-I', str(investment_report),
     ])
 
     with testfixtures.LogCapture(level=logging.INFO) as log_capture:
         ltfa.run(args)
         log_capture.check(*expected_log)
 
-    balances_html = tmpdir / 'ltfa_bokeh.html'
-    assert balances_html.exists()
+    assert bokeh_html.exists()
 
-    #  capgains_html = tmpdir / 'ltfa_capgains_mpld3.html'
-    #  assert capgains_html.exists()
+    if expected_investment_report.exists():
+        with open(scenario_dir / f'{scenario}.investment_report.txt', "r") as left:
+            with open(investment_report, 'r') as right:
+                assert left.readlines() == right.readlines()
+    else:
+        assert not investment_report.exists()
