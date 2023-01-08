@@ -74,14 +74,17 @@ def run(args) -> None:
     accounts = accounts_to_dataframes(accounts)
     analysis = Analysis(accounts, salary_matchers)
 
-    if analysis.has_capgains:
-        analysis.print_capgains_analysis()
+    if args.investment_report and analysis.has_capgains:
+        with open(args.investment_report, 'w') as fh:
+            analysis.print_capgains_analysis(fh)
 
-    plotting_bokeh.makeplot_balances(accounts, annotations, analysis, str(args.output_dir / 'ltfa_bokeh.html'))
+    if args.bokeh:
+        plotting_bokeh.makeplot_balances(accounts, annotations, analysis, args.bokeh)
 
 
 def parse_args(args) -> argparse.Namespace:
     argparser = argparse.ArgumentParser(description="")
+
     argparser.add_argument(
         '--config',
         metavar='FILE',
@@ -93,7 +96,8 @@ def parse_args(args) -> argparse.Namespace:
 
     argparser.add_argument('--debug', action='store_true', help='Enable debug logging', default=False)
 
-    argparser.add_argument('-o', '--output-dir', type=Path, help='Directory to write output into', required=True)
+    argparser.add_argument('-B', '--bokeh', type=Path, metavar='FILE', help='Write bokeh visualization to this file')
+    argparser.add_argument('-I', '--investment-report', nargs='?', type=Path, metavar='FILE', const='/dev/stdout', help='File to write investment report into (default: stdout)')
 
     return argparser.parse_args(args)
 
