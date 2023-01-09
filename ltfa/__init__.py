@@ -18,7 +18,7 @@ from ltfa.util import LtfaError
 
 def run(args) -> None:
     # Set up logging
-    log_level = logging.DEBUG if args.debug else logging.INFO
+    log_level = args.loglevel
     logging.basicConfig(format='%(levelname)s: %(message)s', level=log_level, stream=sys.stdout)
     accounts: list[Account] = []
 
@@ -94,7 +94,18 @@ def parse_args(args) -> argparse.Namespace:
         default=os.path.join(appdirs.user_config_dir('ltfa'), 'ltfa.conf'),
     )
 
-    argparser.add_argument('--debug', action='store_true', help='Enable debug logging', default=False)
+    argparser.add_argument(
+        '-d', '--debug',
+        help="Enable debug messages",
+        action="store_const", dest="loglevel", const=logging.DEBUG,
+        default=logging.WARNING,
+    )
+
+    argparser.add_argument(
+        '-v', '--verbose',
+        help="Be verbose",
+        action="store_const", dest="loglevel", const=logging.INFO,
+    )
 
     argparser.add_argument('-B', '--bokeh', type=Path, metavar='FILE', help='Write bokeh visualization to this file')
     argparser.add_argument('-I', '--investment-report', nargs='?', type=Path, metavar='FILE', const='/dev/stdout', help='File to write investment report into (default: stdout)')
