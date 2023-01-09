@@ -65,12 +65,6 @@ def run(args) -> None:
         else:
             logging.warning("{}: Got no transactions at all".format(a.name))
 
-    #  analysis = Analysis(accounts)
-
-    #  plotting_mpld3.makeplot_balances(accounts, str(args.output_dir / 'ltfa_balances_mpld3.html'))
-    #  plotting_mpld3.makeplot_capgains(accounts, str(args.output_dir / 'ltfa_capgains_mpld3.html'))
-    #  plotting_mpld3.makeplot_cashflow(accounts, str(args.output_dir / 'ltfa_cashflow.html'))
-
     accounts = accounts_to_dataframes(accounts)
     analysis = Analysis(accounts, salary_matchers)
 
