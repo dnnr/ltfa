@@ -205,9 +205,9 @@ class Analysis():
         self.gains = gains
 
 
-    def print_capgains_analysis(self, file) -> None:
+    def make_capgains_analysis(self, fh) -> None:
         def p(s):
-            return print(s, file=file)
+            return print(s, file=fh)
 
         for i in (8, 4, 2):
             ret = self.get_averaged_capgains(ewm_span_years=i)

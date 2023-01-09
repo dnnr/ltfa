@@ -70,7 +70,7 @@ def run(args) -> None:
 
     if args.investment_report and analysis.has_capgains:
         with open(args.investment_report, 'w') as fh:
-            analysis.print_capgains_analysis(fh)
+            analysis.make_capgains_analysis(fh)
 
     if args.bokeh:
         plotting_bokeh.makeplot_balances(accounts, annotations, analysis, args.bokeh)
