@@ -51,7 +51,7 @@ def run(args) -> None:
     for a in accounts:
         a.stage2(accounts)
 
-    # Stage 3 (perform some txn classifications based on now-complete knowledge)
+    # Stage 3 (finalization based on now-complete knowledge)
     for a in accounts:
         a.stage3()
 
