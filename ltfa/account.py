@@ -53,26 +53,10 @@ class Account:
             stillnegative = t.balance < 0
 
     def stage3(self) -> None:
-        """ This is basically a transaction classification step. """
-        self._classify_txns()
-
-    def _classify_txns(self) -> None:
         for txn in self.txns:
-            # Any txn still with isneutral==None is now assumed non-neutral:
+            # Any txn still with isneutral==None can now be safely assumed non-neutral.
             if txn.isneutral == None:
                 txn.isneutral = False
-            if isinstance(txn.peeraccount, Account):
-                if not txn.isneutral:
-                    logging.info(
-                        "{}: Weird txn as an Account as peeraccount but isn't neutral: {}".format(
-                            self.name, txn.shortstr()
-                        )
-                    )
-            else:
-                if txn.isneutral:
-                    logging.info(
-                        "{}: Weird txn is neutral doesn't point to an Account: {}".format(self.name, txn.shortstr())
-                    )
 
     def _recompute_balances(self) -> None:
         balance_start = self.config.get('balance_start') or 0
