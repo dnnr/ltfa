@@ -9,6 +9,7 @@ import pandas as pd
 import re
 import functools
 from typing import Optional
+from operator import attrgetter
 
 class Analysis():
     def __init__(self, accounts: list, salary_matchers: list) -> None:
@@ -243,3 +244,56 @@ class Analysis():
                 gains_yoy / invested_yoy, gains_yoy, invested_yoy
                 ))
         stats_for_yoy()
+
+    def make_monthly_overview(self, fh, month):
+        def p(s=''):
+            return print(s, file=fh)
+
+        df = self.all_in_one_df
+
+        spending = df[~df.salary & ~df.isneutral & (df.asset_type != 'investment')].loc[month]
+
+        capgains = Decimal(df[~df.isneutral & (df.asset_type == 'investment')].loc[month].value.sum()).quantize(Decimal('1'))
+        total_spending = -Decimal(spending.value.sum()).quantize(Decimal('1'))
+
+        net_worth_change = Decimal(df.loc[month].value.sum()).quantize(Decimal('1'))
+
+        value_format = '.2f'
+        longest_value = max(len(f'{v:{value_format}}') for v in spending.value)
+
+        def nicify(s):
+            # Titleize any all-caps words at least 5 chars long
+            s = re.sub(r'\b[A-Z/+-]{5,999}\b', lambda m: m.group(0).title(), s)
+            return s
+
+        def find_truncate_length(allstrings, maxlen):
+            longest = max(len(s) for s in allstrings)
+            return min(longest, maxlen)
+
+        def trunc_align(s, maxlen):
+            s = s[:maxlen - 3] + '...' if len(s) > maxlen else s
+            s = re.sub(r'\.\.\.+$', '...', s)
+            return f'{s: <{maxlen}}'
+
+        max_peername_length = find_truncate_length(spending.peername, 25)
+        max_subject_length = find_truncate_length(spending.subject, 120)
+
+        spending_strs = []
+        for t in sorted(spending.itertuples(), key=attrgetter('value')):
+            subject = nicify(t.subject)
+            subject = trunc_align(subject, max_subject_length)
+            peername = nicify(t.peername)
+            peername = trunc_align(peername, max_peername_length)
+            spending_strs.append(f'{t.value: >{longest_value}{value_format}} €  {peername}  {subject}  {t.account}')
+
+        p(f'Overview for {month}')
+        p(f'====================')
+        p()
+        p(f'Total spending: {total_spending} €')
+        p()
+        p(f'Capital gains: {capgains} €')
+        p(f'Net worth change: {net_worth_change} €')
+        p()
+        p('Spending transactions')
+        p('---------------------')
+        p('\n'.join(spending_strs))

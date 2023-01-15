@@ -2,6 +2,8 @@ import logging
 import sys
 import yaml
 import dateutil.parser
+import dateutil.relativedelta
+import datetime
 import argparse
 import os
 import appdirs
@@ -72,6 +74,13 @@ def run(args) -> None:
         with open(args.investment_report, 'w') as fh:
             analysis.make_capgains_analysis(fh)
 
+    if args.monthly_overview:
+        if not args.month_for_overview:
+            one_month_ago = datetime.date.today() - dateutil.relativedelta.relativedelta(months=1)
+            args.month_for_overview = one_month_ago.strftime('%Y-%m')
+        with open(args.monthly_overview, 'w') as fh:
+            analysis.make_monthly_overview(fh, args.month_for_overview)
+
     if args.bokeh:
         plotting_bokeh.makeplot_balances(accounts, annotations, analysis, args.bokeh)
 
@@ -104,6 +113,9 @@ def parse_args(args) -> argparse.Namespace:
     argparser.add_argument('-B', '--bokeh', type=Path, metavar='FILE', help='Write bokeh visualization to this file')
     argparser.add_argument('-I', '--investment-report', nargs='?', type=Path, metavar='FILE', const='/dev/stdout', help='File to write investment report into (default: stdout)')
 
+    argparser.add_argument('-M', '--monthly-overview', nargs='?', type=Path, metavar='FILE', const='/dev/stdout', help='File to write montly report into (default: /dev/stdout)')
+    argparser.add_argument('--month-for-overview', nargs='?', type=str, metavar='YYYY-MM', help='Month to use for monthly overview (default: last month)')
+
     return argparser.parse_args(args)
 
 
@@ -117,16 +129,17 @@ def accounts_to_dataframes(accounts) -> list[pd.DataFrame]:
 
     ret = []
     for account in accounts:
+        asset_type = account.config.get('asset-type')
         # Assume that the initial balance has always been there:
-        startat: list[tuple] = [(pd.to_datetime(beginningoftime), float(account.initial_balance), 'ltfa', 'Initial account balance', True)]
+        startat: list[tuple] = [(pd.to_datetime(beginningoftime), float(account.initial_balance), 'ltfa', 'Initial account balance', True, account.name, asset_type)]
 
         # Add an empty transaction at the end
         endat: list[tuple] = [(pd.to_datetime(endoftime), float(0), [])]
 
         # Turn account transactions into dataframe
         txns = pd.DataFrame(
-            startat + [(pd.to_datetime(txn.date), float(txn.value), getattr(txn, 'peername', 'n/a'), txn.subject, txn.isneutral) for txn in account.txns] + endat,
-            columns=['date', 'value', 'peername', 'subject', 'isneutral']).astype(
+            startat + [(pd.to_datetime(txn.date), float(txn.value), getattr(txn, 'peername', 'n/a'), txn.subject, txn.isneutral, account.name, asset_type) for txn in account.txns] + endat,
+            columns=['date', 'value', 'peername', 'subject', 'isneutral', 'account', 'asset_type']).astype(
                 {
                     'isneutral': 'boolean',
                 }
