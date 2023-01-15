@@ -13,7 +13,12 @@ from typing import Optional
 class Analysis():
     def __init__(self, accounts: list, salary_matchers: list) -> None:
         self.classify_savings(accounts)
-        self.classify_salary(accounts, salary_matchers)
+
+        for account in accounts:
+            self.classify_salary(account.txns, salary_matchers)
+        self.all_in_one_df = pd.concat([a.txns for a in accounts], sort=True).sort_index()
+        self.salary = self.all_in_one_df[self.all_in_one_df['salary']][['value']]
+
         self.analyze_capgains(accounts)
 
     def get_averaged_capgains(self, ewm_span_years: Optional[float] = None) -> SimpleNamespace:
@@ -60,69 +65,43 @@ class Analysis():
 
         self.savings = savings
 
-    def classify_salary(self, accounts, salary_matchers) -> None:
-        # Only consider non-investment accounts for incoming salary
-        accounts = [a for a in accounts if
-                    a.meta.config.get('asset-type') != 'investment'
-                    and len(a.txns)]
 
-        if not accounts:
-            self.salary = None
-            return
+    def classify_salary(self, df, salary_matchers):
+        # Start out with all-false mask
+        combined_mask = df.index != df.index
 
-        spending = pd.concat([a.txns[a.txns.isneutral == False] for a in accounts], sort=True)
-
-        def is_salary(df, matcher=dict()) -> pd.DataFrame:
-            # Return "all false" if matcher has no conditions:
+        for matcher in salary_matchers:
+            # Skip empty matchers
             if matcher == {}:
-                return df != df
+                next
 
-            # Turn matcher conditions into boolean masks
-            masks = []
+            # Accumulate matcher conditions with logical AND, starting with an
+            # all-true mask:
+            mask = df.index == df.index
+            foo = df.value > 23
+            #  print(f'initial {mask=}')
+            #  print(f'initial {foo=}')
             for k, v in matcher.items():
                 if k == 'peername':
-                    masks.append(df.peername.str.contains(v, case=False))
+                    mask &= df.peername.str.contains(v, case=False)
                 elif k == 'subject':
-                    masks.append(df.subject.str.contains(v, case=False))
+                    mask &= df.subject.str.contains(v, case=False)
                 elif k == 'minimum-value':
-                    masks.append(df.value >= Decimal(v))
+                    mask &= df.value >= Decimal(v)
                 elif k == 'value':
-                    masks.append(df.value == Decimal(v))
+                    mask &= df.value == Decimal(v)
                 elif k == 'not-before':
-                    masks.append(df.index >= pd.to_datetime(v))
+                    mask &= df.index >= pd.to_datetime(v)
                 elif k == 'not-after':
-                    masks.append(df.index <= pd.to_datetime(v))
+                    mask &= df.index <= pd.to_datetime(v)
                 else:
                     raise ValueError(f'Unknown key in salary matcher: {k}')
 
-            # Combine all masks with logical AND
-            mask = functools.reduce(lambda a, b: a & b, masks)
+            combined_mask |= mask
 
-            if not mask.any():
-                # Consider making this non-fatal if it turns out problematic
-                raise ValueError(f'Warning (fatal for now): Salary matcher did not match any transaction: {matcher}')
+        df['salary'] = False
+        df.loc[combined_mask, 'salary'] = True
 
-            return mask
-
-        # Create boolean mask for each matcher
-        salary_masks = [is_salary(spending, matcher=m) for m in salary_matchers]
-
-        # Combine masks with logical OR
-        if salary_masks:
-            salary_mask = functools.reduce(lambda a, b: a | b, salary_masks)
-        else:
-            salary_mask = spending != spending
-
-        # Apply mask to all spending transactions, get salary dataframe
-        salary = spending.where(salary_mask).dropna()
-
-        for row in salary.itertuples():
-            logging.debug(f'Classifying as salary: {row}')
-
-        # Keep only required columns (some downstream steps choke on the strings and boolean data):
-        salary = salary[['value']]
-
-        self.salary = salary
 
 
     def analyze_capgains(self, accounts) -> None:
