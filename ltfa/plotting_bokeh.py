@@ -8,7 +8,6 @@ import matplotlib.colors
 import logging
 import datetime
 from types import SimpleNamespace
-import sys
 from ltfa.util import color_scale_lightness
 from typing import Generator
 
