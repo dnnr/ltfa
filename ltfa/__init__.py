@@ -85,7 +85,7 @@ def parse_args(args) -> argparse.Namespace:
         type=argparse.FileType('r'),
         dest='config',
         help="Configuration file to use (default: %(default)s ",
-        default=os.path.join(appdirs.user_config_dir('ltfa'), 'ltfa.conf'),
+        default=os.path.join(appdirs.user_config_dir('ltfa'), 'ltfa.yaml'),
     )
 
     argparser.add_argument(
