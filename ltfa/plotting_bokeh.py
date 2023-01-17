@@ -378,12 +378,10 @@ def add_capital_returns_plot(figure, accounts, annotations, analysis) -> None:
 
 def add_spending_and_savings_plot(figure, accounts, accounts_stacked, annotations, analysis) -> None:
     ewm_years = 2
-    ewm_years_longterm = 7
     colors = color_gen()
     salary_color = next(colors)
     spending_color = next(colors)
     savings_color = next(colors)
-    spending_longterm_color = next(colors)
 
     all_plotted_data = []
 
@@ -391,8 +389,7 @@ def add_spending_and_savings_plot(figure, accounts, accounts_stacked, annotation
         # Really nothing to plot
         return
 
-    savings_ewm, salary_ewm, salary_monthly_sum, spending_estimate = calc_spending_and_savings_ewms(analysis, ewm_years)
-    _, _, _, spending_estimate_longterm = calc_spending_and_savings_ewms(analysis, ewm_years_longterm)
+    savings_ewm, salary_ewm, salary_monthly_sum, spending = calc_spending_and_savings_ewms(analysis, ewm_years)
 
     if not analysis.salary.empty:
         figure.line(source=salary_monthly_sum, x='date', y='value', legend_label='Actual salary per month', color=salary_color, line_width=1.3)
@@ -402,12 +399,9 @@ def add_spending_and_savings_plot(figure, accounts, accounts_stacked, annotation
         figure.line(source=salary_ewm, x='date', y='value', legend_label=f'Salary ({ewm_years}y EWM)', color=salary_color, line_width=2)
         all_plotted_data.append(salary_ewm)
 
-        figure.line(source=spending_estimate, x='date', y='value', color=spending_color, legend_label=f'Estimated monthly spending ({ewm_years}y EWM)', line_width=1.3)
-        figure.varea(source=spending_estimate, x='date', y1=0, y2='value', color=spending_color, legend_label=f'Estimated monthly spending ({ewm_years}y EWM)', fill_alpha=0.5)
-        all_plotted_data.append(spending_estimate)
-
-        figure.line(source=spending_estimate_longterm, x='date', y='value', color=spending_longterm_color, legend_label=f'Estimated monthly spending ({ewm_years_longterm}y EWM)', line_width=1.1)
-        all_plotted_data.append(spending_estimate_longterm)
+        figure.line(source=spending, x='date', y='value', color=spending_color, legend_label=f'Monthly spending ({ewm_years}y EWM)', line_width=1.3)
+        figure.varea(source=spending, x='date', y1=0, y2='value', color=spending_color, legend_label=f'Monthly spending ({ewm_years}y EWM)', fill_alpha=0.5)
+        all_plotted_data.append(spending)
 
     figure.line(source=savings_ewm, x='date', y='value', color=savings_color, legend_label='Monthly savings (2y EWM)', line_width=1.3, line_alpha=0.8)
     all_plotted_data.append(savings_ewm)
@@ -425,6 +419,10 @@ def calc_spending_and_savings_ewms(analysis, ewm_years):
     # Compute EWM over savings (suppressing the first 30 days, which are usually somewhat distorted/overweighted)
     savings_ewm = analysis.savings.ewm(span=ewm_years * 365, min_periods=30).mean().dropna() * 30
 
+    df = analysis.all_in_one_df
+    spending = df[~df.isneutral & (df.asset_type != 'investment') & ~df.salary]
+    spending = - spending[['value']].resample('1D').sum().fillna(0).ewm(ewm_years * 365, min_periods=30).mean().dropna() * 30
+
     # Everything other than savings depends on having salary information:
     salary = analysis.salary
     if not salary.empty:
@@ -439,18 +437,9 @@ def calc_spending_and_savings_ewms(analysis, ewm_years):
         # pattern but no additional information:
         salary_ewm = salary.resample('1M').sum().fillna(0).ewm(span=ewm_years * 365 / 30).mean()
 
-        # Estimate spending by taking daily average of the salary and subtracting
-        # the savings. The idea is that this adjusts for the effects of raises and bonuses.
-        spending_estimate = salary_ewm.resample('1D').ffill() - savings_ewm
+        return savings_ewm, salary_ewm, salary_monthly_sum, spending
 
-        # Make sure to not estimate spending past the available salary data
-        spending_estimate = spending_estimate[spending_estimate.index <= salary_ewm.index[-1]]
-
-        spending_estimate = spending_estimate.dropna()
-
-        return savings_ewm, salary_ewm, salary_monthly_sum, spending_estimate
-
-    return savings_ewm, None, None, None
+    return savings_ewm, None, None, spending
 
 
 def expand_mask(mask) -> pd.DataFrame:
