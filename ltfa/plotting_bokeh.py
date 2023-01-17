@@ -516,10 +516,15 @@ def makeplot_balances(accounts, annotations, analysis, file) -> None:
     figure2.height = 300
     figure3.height = 300
 
+    # Suppressing mypy error, not sure how to fix it...
+    vertical_crosshair = bk.models.Span(dimension='height', line_dash='dotted', line_width=1)  # type: ignore[attr-defined]
+
     # Apply reasonable defaults for legends:
     for figure in figures_to_plot:
         figure.legend.location = 'top_left'
         figure.legend.click_policy = 'hide'
+
+        figure.add_tools(bk.models.CrosshairTool(overlay=vertical_crosshair))
 
     # Note: gridplot got broken in 3.0.0 (still is in 3.0.1). It didn't draw
     # correctly. I switched to column() as a workaround, but it doesn't have
