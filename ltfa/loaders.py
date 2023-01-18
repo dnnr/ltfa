@@ -44,7 +44,7 @@ class CsvLoader:
 
     @staticmethod
     def load_txns(filepath, formatcfg, filterlist):
-        with open(filepath, 'r') as csvfile:
+        with open(filepath, 'r', errors='replace') as csvfile:
             delimiter = formatcfg.get('delimiter') or None
 
             dialect = 'excel'
