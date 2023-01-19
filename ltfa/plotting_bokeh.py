@@ -427,13 +427,13 @@ def add_spending_and_savings_plot(figure, annotations, analysis) -> None:
 
 
 def ewm_daily_as_monthly(df, years):
-    return df.ewm(span=years * 365, min_periods=30).mean().dropna() * 30
+    return df.ewm(span=years * 365, min_periods=30).mean().dropna() * 30.4
 
 
 def calc_spending_and_salary_ewms(analysis, ewm_years):
     """ Helper to compute spending and salary data using a given EWM span """
     # Compute EWM over savings (suppressing the first 30 days, which are usually somewhat distorted/overweighted)
-    savings_ewm = analysis.daily_savings.ewm(span=ewm_years * 365, min_periods=30).mean().dropna() * 30
+    savings_ewm = analysis.daily_savings.ewm(span=ewm_years * 365, min_periods=30).mean().dropna() * 30.4
 
     # Everything other than savings depends on having salary information:
     salary = analysis.salary
@@ -447,7 +447,7 @@ def calc_spending_and_salary_ewms(analysis, ewm_years):
         # Compute EWM of salary, but using a 1M resampling because salary really
         # has a known monthly cadence, and otherwise, we'd just see a saw tooth
         # pattern but no additional information:
-        salary_ewm = salary.resample('1M').sum().fillna(0).ewm(span=ewm_years * 365 / 30).mean()
+        salary_ewm = salary.resample('1M').sum().fillna(0).ewm(span=ewm_years * 365 / 30.4).mean()
 
         return savings_ewm, salary_ewm, salary_monthly_sum
 
