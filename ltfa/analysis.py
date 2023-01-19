@@ -246,8 +246,6 @@ class Analysis():
         stats_for_yoy()
 
     def make_monthly_overview(self, fh, month):
-        def p(s=''):
-            return print(s, file=fh)
 
         df = self.all_in_one_df
 
@@ -255,8 +253,6 @@ class Analysis():
 
         capgains = Decimal(df[~df.isneutral & (df.asset_type == 'investment')].loc[month].value.sum()).quantize(Decimal('1'))
         total_spending = -Decimal(spending.value.sum()).quantize(Decimal('1'))
-
-        net_worth_change = Decimal(df.loc[month].value.sum()).quantize(Decimal('1'))
 
         value_format = '.2f'
         longest_value = max(len(f'{v:{value_format}}') for v in spending.value)
@@ -286,13 +282,15 @@ class Analysis():
             peername = trunc_align(peername, max_peername_length)
             spending_strs.append(f'{t.value: >{longest_value}{value_format}} €  {peername}  {subject}  {t.account}')
 
+        def p(s=''):
+            """Print-to-file helper"""
+            return print(s, file=fh)
+
         p(f'Overview for {month}')
         p(f'====================')
         p()
         p(f'Total spending: {total_spending} €')
-        p()
         p(f'Capital gains: {capgains} €')
-        p(f'Net worth change: {net_worth_change} €')
         p()
         p('Spending transactions')
         p('---------------------')
