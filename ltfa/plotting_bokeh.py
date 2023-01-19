@@ -377,11 +377,15 @@ def add_capital_returns_plot(figure, accounts, annotations, analysis) -> None:
 
 
 def add_spending_and_savings_plot(figure, annotations, analysis) -> None:
-    ewm_years = 2
+    ewm_years_shortterm = 0.5
+    ewm_years_midterm = 2
+    ewm_years_longterm = 7
+
     colors = color_gen()
     salary_color = next(colors)
     spending_color = next(colors)
     savings_color = next(colors)
+    spending_longterm_color = next(colors)
 
     all_plotted_data = []
 
@@ -389,23 +393,27 @@ def add_spending_and_savings_plot(figure, annotations, analysis) -> None:
         # Really nothing to plot
         return
 
-    savings_ewm, salary_ewm, salary_monthly_sum = calc_spending_and_salary_ewms(analysis, ewm_years)
+    savings_ewm, salary_ewm, salary_monthly_sum = calc_spending_and_salary_ewms(analysis, ewm_years_midterm)
 
     df = analysis.all_in_one_df
     spending_daily = - df[~df.isneutral & (df.asset_type != 'investment') & ~df.salary][['value']].resample('1D').sum().fillna(0)
-    spending = ewm_daily_as_monthly(spending_daily, ewm_years)
+    spending_ewm = ewm_daily_as_monthly(spending_daily, ewm_years_shortterm)
+    spending_ewm_longterm = ewm_daily_as_monthly(spending_daily, ewm_years_longterm)
 
     if not analysis.salary.empty:
         figure.line(source=salary_monthly_sum, x='date', y='value', legend_label='Actual salary per month', color=salary_color, line_width=1.3)
         figure.circle(source=salary_monthly_sum, x='date', y='value', size=6, color=salary_color, legend_label='Actual salary per month', fill_alpha=0)
         all_plotted_data.append(salary_monthly_sum)
 
-        figure.line(source=salary_ewm, x='date', y='value', legend_label=f'Salary ({ewm_years}y EWM)', color=salary_color, line_width=2)
+        figure.line(source=salary_ewm, x='date', y='value', legend_label=f'Salary ({ewm_years_midterm}y EWM)', color=salary_color, line_width=2)
         all_plotted_data.append(salary_ewm)
 
-        figure.line(source=spending, x='date', y='value', color=spending_color, legend_label=f'Monthly spending ({ewm_years}y EWM)', line_width=1.3)
-        figure.varea(source=spending, x='date', y1=0, y2='value', color=spending_color, legend_label=f'Monthly spending ({ewm_years}y EWM)', fill_alpha=0.5)
-        all_plotted_data.append(spending)
+        figure.line(source=spending_ewm, x='date', y='value', color=spending_color, legend_label=f'Monthly spending ({ewm_years_shortterm}y EWM)', line_width=1.3)
+        figure.varea(source=spending_ewm, x='date', y1=0, y2='value', color=spending_color, legend_label=f'Monthly spending ({ewm_years_shortterm}y EWM)', fill_alpha=0.5)
+        all_plotted_data.append(spending_ewm)
+
+        figure.line(source=spending_ewm_longterm, x='date', y='value', color=spending_longterm_color, legend_label=f'Estimated monthly spending ({ewm_years_longterm}y EWM)', line_width=1.1)
+        all_plotted_data.append(spending_ewm_longterm)
 
     figure.line(source=savings_ewm, x='date', y='value', color=savings_color, legend_label='Monthly savings (2y EWM)', line_width=1.3, line_alpha=0.8)
     all_plotted_data.append(savings_ewm)
