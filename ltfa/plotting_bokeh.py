@@ -376,7 +376,7 @@ def add_capital_returns_plot(figure, accounts, annotations, analysis) -> None:
         add_annotations(figure, annotations['capgains'], annotations_guideline, 0.15)
 
 
-def add_spending_and_savings_plot(figure, accounts, accounts_stacked, annotations, analysis) -> None:
+def add_spending_and_savings_plot(figure, annotations, analysis) -> None:
     ewm_years = 2
     colors = color_gen()
     salary_color = next(colors)
@@ -498,7 +498,7 @@ def makeplot_balances(accounts, annotations, analysis, file) -> None:
         figures_to_plot += [figure2]
 
     if analysis.daily_savings is not None:
-        add_spending_and_savings_plot(figure3, accounts, accounts_stacked, annotations, analysis)
+        add_spending_and_savings_plot(figure3, annotations, analysis)
         figures_to_plot += [figure3]
 
 
