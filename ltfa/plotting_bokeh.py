@@ -400,20 +400,19 @@ def add_spending_and_savings_plot(figure, annotations, analysis) -> None:
     spending_ewm = ewm_daily_as_monthly(spending_daily, ewm_years_shortterm)
     spending_ewm_longterm = ewm_daily_as_monthly(spending_daily, ewm_years_longterm)
 
-    if not analysis.salary.empty:
-        figure.line(source=salary_monthly_sum, x='date', y='value', legend_label='Actual salary per month', color=salary_color, line_width=1.3)
-        figure.circle(source=salary_monthly_sum, x='date', y='value', size=6, color=salary_color, legend_label='Actual salary per month', fill_alpha=0)
-        all_plotted_data.append(salary_monthly_sum)
+    figure.line(source=salary_monthly_sum, x='date', y='value', legend_label='Actual salary per month', color=salary_color, line_width=1.3)
+    figure.circle(source=salary_monthly_sum, x='date', y='value', size=6, color=salary_color, legend_label='Actual salary per month', fill_alpha=0)
+    all_plotted_data.append(salary_monthly_sum)
 
-        figure.line(source=salary_ewm, x='date', y='value', legend_label=f'Salary ({ewm_years_midterm}y EWM)', color=salary_color, line_width=2)
-        all_plotted_data.append(salary_ewm)
+    figure.line(source=salary_ewm, x='date', y='value', legend_label=f'Salary ({ewm_years_midterm}y EWM)', color=salary_color, line_width=2)
+    all_plotted_data.append(salary_ewm)
 
-        figure.line(source=spending_ewm, x='date', y='value', color=spending_color, legend_label=f'Monthly spending ({ewm_years_shortterm}y EWM)', line_width=1.3)
-        figure.varea(source=spending_ewm, x='date', y1=0, y2='value', color=spending_color, legend_label=f'Monthly spending ({ewm_years_shortterm}y EWM)', fill_alpha=0.5)
-        all_plotted_data.append(spending_ewm)
+    figure.line(source=spending_ewm, x='date', y='value', color=spending_color, legend_label=f'Monthly spending ({ewm_years_shortterm}y EWM)', line_width=1.3)
+    figure.varea(source=spending_ewm, x='date', y1=0, y2='value', color=spending_color, legend_label=f'Monthly spending ({ewm_years_shortterm}y EWM)', fill_alpha=0.5)
+    all_plotted_data.append(spending_ewm)
 
-        figure.line(source=spending_ewm_longterm, x='date', y='value', color=spending_longterm_color, legend_label=f'Estimated monthly spending ({ewm_years_longterm}y EWM)', line_width=1.1)
-        all_plotted_data.append(spending_ewm_longterm)
+    figure.line(source=spending_ewm_longterm, x='date', y='value', color=spending_longterm_color, legend_label=f'Estimated monthly spending ({ewm_years_longterm}y EWM)', line_width=1.1)
+    all_plotted_data.append(spending_ewm_longterm)
 
     figure.line(source=savings_ewm, x='date', y='value', color=savings_color, legend_label='Monthly savings (2y EWM)', line_width=1.3, line_alpha=0.8)
     all_plotted_data.append(savings_ewm)
@@ -435,23 +434,24 @@ def calc_spending_and_salary_ewms(analysis, ewm_years):
     # Compute EWM over savings (suppressing the first 30 days, which are usually somewhat distorted/overweighted)
     savings_ewm = analysis.daily_savings.ewm(span=ewm_years * 365, min_periods=30).mean().dropna() * 30.4
 
-    # Everything other than savings depends on having salary information:
     salary = analysis.salary
-    if not salary.empty:
-        # Cut current month from salary date because it's most likely incomplete (distorting month sums)
-        salary = salary[salary.index < salary.index[-1].to_period('M').to_timestamp()]
 
-        # Compute plain monthly sum to actually plot as-is
-        salary_monthly_sum = salary.resample('1M').sum()
+    # Exclude current month from salary data because it's most likely
+    # incomplete (distorting monthly sums).
+    # (Note: We used to cut the most recent month in the data, but that only
+    # works if there actually is any data and can also be wrong, e.g., if the
+    # data ends somewhere in the past.)
+    salary = salary[salary.index < datetime.date.today().strftime('%Y-%m')]
 
-        # Compute EWM of salary, but using a 1M resampling because salary really
-        # has a known monthly cadence, and otherwise, we'd just see a saw tooth
-        # pattern but no additional information:
-        salary_ewm = salary.resample('1M').sum().fillna(0).ewm(span=ewm_years * 365 / 30.4).mean()
+    # Compute plain monthly sum to just plot as-is
+    salary_monthly_sum = salary.resample('1M').sum()
 
-        return savings_ewm, salary_ewm, salary_monthly_sum
+    # Compute EWM of salary, but using a 1M resampling because salary really
+    # has a known monthly cadence, and otherwise, we'd just see a saw tooth
+    # pattern but no additional information:
+    salary_ewm = salary.resample('1M').sum().fillna(0).ewm(span=ewm_years * 365 / 30.4).mean()
 
-    return savings_ewm, None, None
+    return savings_ewm, salary_ewm, salary_monthly_sum
 
 
 def expand_mask(mask) -> pd.DataFrame:
