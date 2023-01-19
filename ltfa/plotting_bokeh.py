@@ -385,7 +385,7 @@ def add_spending_and_savings_plot(figure, accounts, accounts_stacked, annotation
 
     all_plotted_data = []
 
-    if analysis.savings is None:
+    if analysis.daily_savings is None:
         # Really nothing to plot
         return
 
@@ -417,7 +417,7 @@ def add_spending_and_savings_plot(figure, accounts, accounts_stacked, annotation
 def calc_spending_and_savings_ewms(analysis, ewm_years):
     """ Helper to compute spending and savings plots for a given EWM span """
     # Compute EWM over savings (suppressing the first 30 days, which are usually somewhat distorted/overweighted)
-    savings_ewm = analysis.savings.ewm(span=ewm_years * 365, min_periods=30).mean().dropna() * 30
+    savings_ewm = analysis.daily_savings.ewm(span=ewm_years * 365, min_periods=30).mean().dropna() * 30
 
     df = analysis.all_in_one_df
     spending = df[~df.isneutral & (df.asset_type != 'investment') & ~df.salary]
@@ -497,7 +497,7 @@ def makeplot_balances(accounts, annotations, analysis, file) -> None:
         add_capital_returns_plot(figure2, accounts, annotations, analysis)
         figures_to_plot += [figure2]
 
-    if analysis.savings is not None:
+    if analysis.daily_savings is not None:
         add_spending_and_savings_plot(figure3, accounts, accounts_stacked, annotations, analysis)
         figures_to_plot += [figure3]
 
