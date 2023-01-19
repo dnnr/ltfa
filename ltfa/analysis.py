@@ -13,11 +13,12 @@ from operator import attrgetter
 
 class Analysis():
     def __init__(self, accounts: list, salary_matchers: list) -> None:
-        self.classify_savings(accounts)
-
         for account in accounts:
             self.classify_salary(account.txns, salary_matchers)
         self.all_in_one_df = pd.concat([a.txns for a in accounts], sort=True).sort_index()
+
+        self.daily_savings = self.compute_daily_savings(accounts)
+
         self.salary = self.all_in_one_df[self.all_in_one_df['salary']][['value']]
 
         self.analyze_capgains(accounts)
@@ -47,25 +48,17 @@ class Analysis():
                 returns=returns,
                 )
 
-    def classify_savings(self, accounts) -> None:
-        # Consider only non-investment accounts
-        accounts = [a for a in accounts if
-                    a.meta.config.get('asset-type') != 'investment'
-                    and len(a.txns)]
+    def compute_daily_savings(self, accounts):
+        # We define savings as the sum of all non-neutral transactions that
+        # haven't happened on transaction accounts (because those would be
+        # capital gains). Treating savings as a type of transaction (in order,
+        # e.g., to list them in a report) like we do it for salary or spending
+        # would not really be useful as it is rather just the amount of money
+        # *not spent* that is interesting. Therefore, we're building the daily
+        # sums here and abstract away from the individual transactions.
 
-        if not accounts:
-            self.savings = None
-            return
-
-        # Savings is the daily sum of all non-neutral transactions
-        savings = pd.concat([a.txns[a.txns.isneutral == False][['value']] for a in accounts], sort=True)
-        savings = savings.groupby(level='date').sum()
-
-        # Assume zero savings for all days without savings (obviously)
-        savings = savings.resample('1D').mean().fillna(0)
-
-        self.savings = savings
-
+        txns = self.all_in_one_df
+        return txns[~txns.isneutral & (txns.asset_type != 'investment')][['value']].resample('1D').sum().fillna(0)
 
     def classify_salary(self, df, salary_matchers):
         # Start out with all-false mask
@@ -102,8 +95,6 @@ class Analysis():
 
         df['salary'] = False
         df.loc[combined_mask, 'salary'] = True
-
-
 
     def analyze_capgains(self, accounts) -> None:
         # Relevant base metrics for plotting capital gains:
