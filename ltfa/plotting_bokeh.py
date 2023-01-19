@@ -389,7 +389,11 @@ def add_spending_and_savings_plot(figure, annotations, analysis) -> None:
         # Really nothing to plot
         return
 
-    savings_ewm, salary_ewm, salary_monthly_sum, spending = calc_spending_and_savings_ewms(analysis, ewm_years)
+    savings_ewm, salary_ewm, salary_monthly_sum = calc_spending_and_salary_ewms(analysis, ewm_years)
+
+    df = analysis.all_in_one_df
+    spending_daily = - df[~df.isneutral & (df.asset_type != 'investment') & ~df.salary][['value']].resample('1D').sum().fillna(0)
+    spending = ewm_daily_as_monthly(spending_daily, ewm_years)
 
     if not analysis.salary.empty:
         figure.line(source=salary_monthly_sum, x='date', y='value', legend_label='Actual salary per month', color=salary_color, line_width=1.3)
@@ -414,14 +418,14 @@ def add_spending_and_savings_plot(figure, annotations, analysis) -> None:
         add_annotations(figure, annotations['salary'], annotations_guideline, 0.15, color=salary_color, legend_label='Salary annotations')
 
 
-def calc_spending_and_savings_ewms(analysis, ewm_years):
-    """ Helper to compute spending and savings plots for a given EWM span """
+def ewm_daily_as_monthly(df, years):
+    return df.ewm(span=years * 365, min_periods=30).mean().dropna() * 30
+
+
+def calc_spending_and_salary_ewms(analysis, ewm_years):
+    """ Helper to compute spending and salary data using a given EWM span """
     # Compute EWM over savings (suppressing the first 30 days, which are usually somewhat distorted/overweighted)
     savings_ewm = analysis.daily_savings.ewm(span=ewm_years * 365, min_periods=30).mean().dropna() * 30
-
-    df = analysis.all_in_one_df
-    spending = df[~df.isneutral & (df.asset_type != 'investment') & ~df.salary]
-    spending = - spending[['value']].resample('1D').sum().fillna(0).ewm(ewm_years * 365, min_periods=30).mean().dropna() * 30
 
     # Everything other than savings depends on having salary information:
     salary = analysis.salary
@@ -437,9 +441,9 @@ def calc_spending_and_savings_ewms(analysis, ewm_years):
         # pattern but no additional information:
         salary_ewm = salary.resample('1M').sum().fillna(0).ewm(span=ewm_years * 365 / 30).mean()
 
-        return savings_ewm, salary_ewm, salary_monthly_sum, spending
+        return savings_ewm, salary_ewm, salary_monthly_sum
 
-    return savings_ewm, None, None, spending
+    return savings_ewm, None, None
 
 
 def expand_mask(mask) -> pd.DataFrame:
