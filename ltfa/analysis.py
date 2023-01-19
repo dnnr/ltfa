@@ -15,11 +15,12 @@ class Analysis():
     def __init__(self, accounts: list, salary_matchers: list) -> None:
         for account in accounts:
             self.classify_salary(account.txns, salary_matchers)
-        self.all_in_one_df = pd.concat([a.txns for a in accounts], sort=True).sort_index()
+
+        self.txns = pd.concat([a.txns for a in accounts], sort=True).sort_index()
 
         self.daily_savings = self.compute_daily_savings(accounts)
 
-        self.salary = self.all_in_one_df[self.all_in_one_df['salary']][['value']]
+        self.salary = self.txns[self.txns['salary']][['value']]
 
         self.analyze_capgains(accounts)
 
@@ -57,8 +58,7 @@ class Analysis():
         # *not spent* that is interesting. Therefore, we're building the daily
         # sums here and abstract away from the individual transactions.
 
-        txns = self.all_in_one_df
-        return txns[~txns.isneutral & (txns.asset_type != 'investment')][['value']].resample('1D').sum().fillna(0)
+        return self.txns[~self.txns.isneutral & (self.txns.asset_type != 'investment')][['value']].resample('1D').sum().fillna(0)
 
     def classify_salary(self, df, salary_matchers):
         # Start out with all-false mask
@@ -237,12 +237,9 @@ class Analysis():
         stats_for_yoy()
 
     def make_monthly_overview(self, fh, month):
+        spending = self.txns[~self.txns.salary & ~self.txns.isneutral & (self.txns.asset_type != 'investment')].loc[month]
 
-        df = self.all_in_one_df
-
-        spending = df[~df.salary & ~df.isneutral & (df.asset_type != 'investment')].loc[month]
-
-        capgains = Decimal(df[~df.isneutral & (df.asset_type == 'investment')].loc[month].value.sum()).quantize(Decimal('1'))
+        capgains = Decimal(self.txns[~self.txns.isneutral & (self.txns.asset_type == 'investment')].loc[month].value.sum()).quantize(Decimal('1'))
         total_spending = -Decimal(spending.value.sum()).quantize(Decimal('1'))
 
         value_format = '.2f'

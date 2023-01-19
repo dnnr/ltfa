@@ -395,8 +395,8 @@ def add_spending_and_savings_plot(figure, annotations, analysis) -> None:
 
     savings_ewm, salary_ewm, salary_monthly_sum = calc_spending_and_salary_ewms(analysis, ewm_years_midterm)
 
-    df = analysis.all_in_one_df
-    spending_daily = - df[~df.isneutral & (df.asset_type != 'investment') & ~df.salary][['value']].resample('1D').sum().fillna(0)
+    txns = analysis.txns
+    spending_daily = - txns[~txns.isneutral & (txns.asset_type != 'investment') & ~txns.salary][['value']].resample('1D').sum().fillna(0)
     spending_ewm = ewm_daily_as_monthly(spending_daily, ewm_years_shortterm)
     spending_ewm_longterm = ewm_daily_as_monthly(spending_daily, ewm_years_longterm)
 
