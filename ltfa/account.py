@@ -15,6 +15,7 @@ from typing import Optional
 from ltfa.loaders import YamlTxnLoader, CsvLoader
 from ltfa.transaction import Transaction
 from ltfa.util import formatifnonempty
+from ltfa.util import LtfaError
 
 
 class Account:
@@ -28,6 +29,22 @@ class Account:
         return f"<Account at 0x{id(self):x}, name={self.name}, {len(self.txns)} txns>"
 
     def stage1(self) -> None:
+        if 'asset-type' not in self.config:
+            raise LtfaError(f'No asset-type defined for account "{self.name}"')
+
+        if self.config['asset-type'] not in ['liquidity', 'investment', 'misc', 'shared-liquidity']:
+            raise LtfaError(f'Invalid asset-type set for account "{self.name}": {self.config["asset-type"]}')
+
+        if self.config['asset-type'] == 'shared-liquidity':
+            if not 'share-owned' in self.config:
+                raise LtfaError(f'Missing share-owned value for shared-liquidity account "{self.name}"')
+            if self.config.get('autoinfer-from') or []:
+                raise LtfaError(f'Setting any autoinfer-from matchers for a shared-liquidity account is not allowed: {self.name}')
+        else:
+            if 'share-owned' in self.config:
+                raise LtfaError(f'{self.name}: Setting share-owned is only allowed for for shared-liquidity accounts')
+
+
         self._load_csv_txns()
         self._load_static_txns()
 
@@ -35,6 +52,9 @@ class Account:
 
     def stage2(self, accounts) -> None:
         self._autoinfer_txns(accounts)
+
+        # Reduce all transaction values and balances according to shared ownership
+        self._apply_shared_ownership()
 
         # Balance checkpoint insertion relies on a correct initial_balance, so
         # recompute beforehand:
@@ -59,16 +79,18 @@ class Account:
                 txn.isneutral = False
 
     def _recompute_balances(self) -> None:
+        share_owned = Decimal(self.config.get('share-owned') or 1)
         balance_start = self.config.get('balance_start') or 0
 
         if balance_start == 'countback':
             # Infer initial balance from desired final balance and the sum of
             # transaction values:
+            balance_end = share_owned * Decimal(self.config.get('balance_end') or 0)
             sumofvalues = sum(t.value for t in self.txns) or Decimal(0)
-            balance_start = Decimal(self.config.get('balance_end') or 0) - sumofvalues
+            balance_start = Decimal(balance_end) - sumofvalues
         else:
             # Use it as is
-            balance_start = Decimal(balance_start)
+            balance_start = share_owned * Decimal(balance_start)
 
         if self.initial_balance is None:
             logging.debug("{}: Setting initial balance: {}".format(self.name, balance_start))
@@ -107,6 +129,9 @@ class Account:
         if not matchsets:
             return
 
+        if self.config['asset-type'] == 'shared-liquidity':
+            return
+
         # Apply defaults to matchsets:
         inferdefaults = self.config.get('autoinfer-from-defaults') or {}
         for matchset in matchsets:
@@ -123,7 +148,7 @@ class Account:
         # Look for matching transactions in other accounts:
         matches = []
         for account in accounts:
-            if account is self:
+            if account is self or account.config['asset-type'] == 'shared-liquidity':
                 continue
             for txn in account.txns:
                 for matchset in matchsets:
@@ -165,6 +190,16 @@ class Account:
             logging.debug("{}: Adding auto-inferred txn: {} (via {})".format(self.name, t.shortstr(), t.peername))
 
         self._insert_txns(newtxns)
+
+    def _apply_shared_ownership(self) -> None:
+        if self.config['asset-type'] != 'shared-liquidity':
+            return
+        share = Decimal(self.config['share-owned'])
+        logging.debug(f'{self.name}: Applying shared ownership: {share}')
+
+        for txn in self.txns:
+            txn.value *= share
+            txn.balance *= share
 
     def _load_csv_txns(self) -> None:
         defs = self.config.get('from-csv') or []
