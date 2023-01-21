@@ -11,11 +11,12 @@ import ltfa.util
 @pytest.mark.parametrize(
     'scenario',
     (
+        'savings_negative_gains',
+        'savings_varying_interest',
+        'shared_ownership',
         'simple_checking',
         'simple_savings',
         'simple_savings_monthly',
-        'savings_varying_interest',
-        'savings_negative_gains',
      ),
 )
 def test_real_data_snapshot(tmpdir, request, scenario):

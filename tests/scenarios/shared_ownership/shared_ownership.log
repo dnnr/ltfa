@@ -1,0 +1,4 @@
+INFO: SomeCheckingAcc: Final balance after 2 txns: 2010-12-14, € 6532.38
+INFO: SomeSharedAcc: Final balance after 2 txns: 2010-12-14, € 1000.00
+INFO: SomeOtherAcc: Final balance after 2 txns: 2010-12-14, € 0.0
+INFO: No investment accounts defined, cannot make capgains plot
