@@ -379,7 +379,7 @@ def add_capital_returns_plot(figure, accounts, annotations, analysis) -> None:
 def add_spending_and_savings_plot(figure, annotations, analysis) -> None:
     ewm_years_shortterm = 0.5
     ewm_years_midterm = 2
-    ewm_years_longterm = 7
+    ewm_years_longterm = 3
 
     colors = color_gen()
     salary_color = next(colors)
