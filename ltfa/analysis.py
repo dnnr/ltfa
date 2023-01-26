@@ -72,9 +72,6 @@ class Analysis():
             # Accumulate matcher conditions with logical AND, starting with an
             # all-true mask:
             mask = df.index == df.index
-            foo = df.value > 23
-            #  print(f'initial {mask=}')
-            #  print(f'initial {foo=}')
             for k, v in matcher.items():
                 if k == 'peername':
                     mask &= df.peername.str.contains(v, case=False)
