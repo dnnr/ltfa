@@ -164,9 +164,8 @@ def add_balances_plot(figure, accounts, accounts_stacked, annotations, analysis)
         # overlapping them.
         balances_and_txns = pd.concat([balances_for_markers, txns_with_top])
 
-        # Bokeh chokes on boolean columns (fails in JSON serialization). We
-        # don't need this column anyway, so drop it:
-        balances_and_txns.drop('isneutral', axis=1, inplace=True)
+        # Keep only columns that we actually need, because bokeh includes everything into generated HTML:
+        balances_and_txns = balances_and_txns[['balance', 'top', 'account', 'value', 'peername', 'subject']]
 
         # concat() doesn't keep the index sorted, so do that explicitly. Use a
         # stable sorting here to ensure balance row always appears before the
