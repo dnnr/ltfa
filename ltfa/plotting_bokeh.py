@@ -328,14 +328,11 @@ def add_invest_and_gains_plot(figure, accounts, annotations, analysis) -> None:
                                          ))
 
 def add_capital_returns_plot(figure, accounts, annotations, analysis) -> None:
-    def plotreturns(figure, analysis, ewm_span_years, alpha, color, line_width, legend_label, with_varea, with_hover) -> pd.DataFrame:
-        """ Helper function that plots returns while using a given EWM span (None means overall average) """
-        returns = analysis.get_averaged_capgains(ewm_span_years=ewm_span_years).returns
-        returns = returns[returns.index >= analysis.date_of_first_actual_gain]
-
+    def plotreturns(figure, cds, column, alpha, color, line_width, legend_label, with_varea, with_hover) -> pd.DataFrame:
+        """ Helper function that plots returns while using a given column in a CDS """
         if with_varea:
-            figure.varea(source=returns, x='date', y1=0, y2='returns', color=color, fill_alpha=0.5 * alpha, legend_label=legend_label)
-        returns_glyph = figure.line(source=returns, x='date', y='returns', color=color, legend_label=legend_label, line_width=line_width, alpha=alpha)
+            figure.varea(source=cds, x='date', y1=0, y2=column, color=color, fill_alpha=0.5 * alpha, legend_label=legend_label)
+        returns_glyph = figure.line(source=cds, x='date', y=column, color=color, legend_label=legend_label, line_width=line_width, alpha=alpha)
 
         if with_hover:
             figure.add_tools(bk.models.HoverTool(renderers=[returns_glyph],
@@ -350,34 +347,44 @@ def add_capital_returns_plot(figure, accounts, annotations, analysis) -> None:
                                                  ]
                                                  ))
 
-        return returns
 
-    returnsplotter = functools.partial(plotreturns, figure, analysis, line_width=1.3, color='green')
+    # Add columns for all the EWM ranges we want so that we can use a single
+    # shared CDS for the whole plot:
+    ewm_years = [8, 4, 2]
 
-    # Keep track of all plotted data for annotations
-    all_plotted_data = []
+    df = analysis.get_averaged_capgains().returns[['returns']]
+    for years in ewm_years:
+        df[f'returns_ewm_{years}'] = analysis.get_averaged_capgains(ewm_span_years=years).returns.returns
+
+    df = df[df.index >= analysis.date_of_first_actual_gain]
+
+    cds = bk.models.ColumnDataSource(df)
+    returnsplotter = functools.partial(plotreturns, figure, cds, line_width=1.3, color='green')
 
     # Area plot with all-time returns
-    all_plotted_data.append(returnsplotter(
-        ewm_span_years=None,
+    returnsplotter(
+        column = 'returns',
         alpha=1,
         with_varea=True,
         with_hover=True,
         legend_label=f'all-time',
-    ))
+    )
 
     # Returns at several window sizes (smaller windows at more transparency)
     for idx, years in enumerate([8, 4, 2]):
-        all_plotted_data.append(returnsplotter(
-            ewm_span_years=years,
+        column = f'returns_ewm_{years}'
+        returnsplotter(
+            column=column,
             alpha = 1 - 0.3 * idx,
             with_varea=False,
             with_hover=False,
             legend_label=f'{years} year EWM window',
-        ))
+        )
 
     # Find the "top edge" of all plotted data to use as guideline for the annotations:
-    annotations_guideline = pd.concat(all_plotted_data).groupby(level=0).max().rename(columns={'returns': 'value'})
+    annotations_guideline = df.max(axis=1)
+    annotations_guideline.name ='value'
+
     if 'capgains' in annotations:
         add_annotations(figure, annotations['capgains'], annotations_guideline, 0.15)
 
