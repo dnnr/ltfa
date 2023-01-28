@@ -179,6 +179,13 @@ def add_balances_plot(figure, accounts, accounts_stacked, annotations, analysis)
         # visible per day, but all of them contribute to the tooltip content:
         balances_and_txns['marker_alpha'] = [0 if isdup else 0.7 for isdup in balances_and_txns.index.duplicated()]
 
+        # Storing NaNs in the generated JSON is surprisingly costly (~34
+        # bytes), so we're replacing them with an appropriate fallback strings:
+        balances_and_txns.fillna({
+            'peername': 'n/a',
+            'subject': 'n/a',
+        }, inplace=True)
+
         # Finally draw the markers
         # TODO: We should draw them in a single call for all accounts to avoid
         # remaining overlapping artifacts in tooltips (likely to happen when an
