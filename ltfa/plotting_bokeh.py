@@ -408,25 +408,33 @@ def add_spending_and_savings_plot(figure, annotations, analysis) -> None:
 
     savings_ewm, salary_ewm, salary_monthly_sum = calc_spending_and_salary_ewms(analysis, ewm_years_midterm)
 
+    ### Salary
+    # All salary data is monthly, so they can share a DataFrame (and thus a CDS)
+    salary_df = salary_monthly_sum.rename(columns={'value': 'monthly_sum'})
+    salary_df['ewm'] = salary_ewm.value
+    salary_cds = bk.models.ColumnDataSource(salary_df)
+
+    figure.line(source=salary_cds, x='date', y='monthly_sum', legend_label='Actual salary per month', color=salary_color, line_width=1.3)
+    figure.circle(source=salary_cds, x='date', y='monthly_sum', size=6, color=salary_color, legend_label='Actual salary per month', fill_alpha=0)
+
+    figure.line(source=salary_cds, x='date', y='ewm', legend_label=f'Salary ({ewm_years_midterm}y EWM)', color=salary_color, line_width=2)
+    all_plotted_data.append(salary_df.max(axis=1).to_frame(name='value'))
+
+    ### Spending
     txns = analysis.txns
-    spending_daily = - txns[~txns.isneutral & (txns.asset_type != 'investment') & ~txns.salary][['value']].resample('1D').sum().fillna(0)
-    spending_ewm = ewm_daily_as_monthly(spending_daily, ewm_years_shortterm)
-    spending_ewm_longterm = ewm_daily_as_monthly(spending_daily, ewm_years_longterm)
+    spending_df = - txns[~txns.isneutral & (txns.asset_type != 'investment') & ~txns.salary][['value']].resample('1D').sum().fillna(0)
+    spending_df['value_ewm_shortterm'] = ewm_daily_as_monthly(spending_df, ewm_years_shortterm).value
+    spending_df['value_ewm_longterm'] = ewm_daily_as_monthly(spending_df, ewm_years_longterm).value
+    spending_df.drop('value', axis=1, inplace=True)
+    spending_cds = bk.models.ColumnDataSource(spending_df)
 
-    figure.line(source=salary_monthly_sum, x='date', y='value', legend_label='Actual salary per month', color=salary_color, line_width=1.3)
-    figure.circle(source=salary_monthly_sum, x='date', y='value', size=6, color=salary_color, legend_label='Actual salary per month', fill_alpha=0)
-    all_plotted_data.append(salary_monthly_sum)
+    figure.line(source=spending_cds, x='date', y='value_ewm_shortterm', color=spending_color, legend_label=f'Monthly spending ({ewm_years_shortterm}y EWM)', line_width=1.3)
+    figure.varea(source=spending_cds, x='date', y1=0, y2='value_ewm_shortterm', color=spending_color, legend_label=f'Monthly spending ({ewm_years_shortterm}y EWM)', fill_alpha=0.5)
 
-    figure.line(source=salary_ewm, x='date', y='value', legend_label=f'Salary ({ewm_years_midterm}y EWM)', color=salary_color, line_width=2)
-    all_plotted_data.append(salary_ewm)
+    figure.line(source=spending_cds, x='date', y='value_ewm_longterm', color=spending_longterm_color, legend_label=f'Estimated monthly spending ({ewm_years_longterm}y EWM)', line_width=1.1)
+    all_plotted_data.append(spending_df.max(axis=1).to_frame(name='value'))
 
-    figure.line(source=spending_ewm, x='date', y='value', color=spending_color, legend_label=f'Monthly spending ({ewm_years_shortterm}y EWM)', line_width=1.3)
-    figure.varea(source=spending_ewm, x='date', y1=0, y2='value', color=spending_color, legend_label=f'Monthly spending ({ewm_years_shortterm}y EWM)', fill_alpha=0.5)
-    all_plotted_data.append(spending_ewm)
-
-    figure.line(source=spending_ewm_longterm, x='date', y='value', color=spending_longterm_color, legend_label=f'Estimated monthly spending ({ewm_years_longterm}y EWM)', line_width=1.1)
-    all_plotted_data.append(spending_ewm_longterm)
-
+    ### Savings
     figure.line(source=savings_ewm, x='date', y='value', color=savings_color, legend_label='Monthly savings (2y EWM)', line_width=1.3, line_alpha=0.8)
     all_plotted_data.append(savings_ewm)
 
