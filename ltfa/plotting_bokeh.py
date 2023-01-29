@@ -177,7 +177,9 @@ def add_balances_plot(figure, accounts, accounts_stacked, annotations, analysis)
         # Prepare a marker alpha column that is non-zero for every first row
         # per day and zero for the rest, so that only one marker (circle) is
         # visible per day, but all of them contribute to the tooltip content:
-        balances_and_txns['marker_alpha'] = [0 if isdup else 0.7 for isdup in balances_and_txns.index.duplicated()]
+        # TODO: Maybe merge the tooltip content beforehand instead?
+        # Note: float32 actually serializes more compact than float16!
+        balances_and_txns['marker_alpha'] = np.array([0 if isdup else 0.7 for isdup in balances_and_txns.index.duplicated()], dtype=np.float32)
 
         # Storing NaNs in the generated JSON is surprisingly costly (~34
         # bytes), so we're replacing them with an appropriate fallback strings:
@@ -196,8 +198,12 @@ def add_balances_plot(figure, accounts, accounts_stacked, annotations, analysis)
         # value (but use expand_mask so that the first and last zero-value
         # entries are included, otherwise we'll get weird drawing artifacts)
         valid_values_mask = expand_mask(dailies.bottom != dailies.top)
-        figure.varea(source=dailies.where(valid_values_mask), x='date', y1='bottom', y2='top', color=this_color, fill_alpha=0.2, legend_label=account.meta.name)
-        figure.line(source=dailies.where(valid_values_mask), x='date', y='top', color=this_color, line_width=1, legend_label=account.meta.name)
+        dailies = dailies.where(valid_values_mask)
+        dailies = dailies[['top', 'bottom']]
+        dailies_cds = bk.models.ColumnDataSource(dailies)
+
+        figure.varea(source=dailies_cds, x='date', y1='bottom', y2='top', color=this_color, fill_alpha=0.2, legend_label=account.meta.name)
+        figure.line(source=dailies_cds, x='date', y='top', color=this_color, line_width=1, legend_label=account.meta.name)
 
     # The tooltips are a bit hacky: We draw the same one for every marker
     # (balances and every transaction), but use custom formatter to hide the
