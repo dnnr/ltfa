@@ -287,9 +287,14 @@ def add_invest_and_gains_plot(figure, accounts, annotations, analysis) -> None:
     avg_invested_label = 'Invested amount (all-time average)'
     gains_label = 'Capital gains (cumulative)'
 
-    invested_glyph = figure.line(source=analysis.totalinvest, x='date', y='totalinvest', legend_label=invested_label, line_width=1.3, color='black')
-    avg_invested_glyph = figure.line(source=analysis.get_averaged_capgains().totalinvest, x='date', y='totalinvest', legend_label=avg_invested_label, line_width=1.3, color='black', line_dash='dashed')
-    gains_glyph = figure.line(source=analysis.gains.cumsum(), x='date', y='gains', legend_label=gains_label, line_width=1.3, color='green')
+    df = analysis.totalinvest.copy(deep=False)
+    df['totalinvest_average'] = analysis.get_averaged_capgains().totalinvest
+    df['gains_cumsum'] = analysis.gains.cumsum()
+    cds = bk.models.ColumnDataSource(df)
+
+    invested_glyph = figure.line(source=cds, x='date', y='totalinvest', legend_label=invested_label, line_width=1.3, color='black')
+    avg_invested_glyph = figure.line(source=cds, x='date', y='totalinvest_average', legend_label=avg_invested_label, line_width=1.3, color='black', line_dash='dashed')
+    gains_glyph = figure.line(source=cds, x='date', y='gains_cumsum', legend_label=gains_label, line_width=1.3, color='green')
 
     figure.add_tools(bk.models.HoverTool(renderers=[invested_glyph],
                                          toggleable=False,
