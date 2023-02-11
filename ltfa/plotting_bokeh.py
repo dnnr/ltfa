@@ -52,7 +52,7 @@ def stack_dataframes(accounts_df) -> list[pd.DataFrame]:
     ret[0].dailies['bottom'] = 0.
 
     # Initialize first account's "top" values with just its balance
-    ret[0].dailies['top'] = ret[0].dailies.value.cumsum()
+    ret[0].dailies['top'] = ret[0].dailies.balance
 
     for account_df in accounts_df[1:]:
         prev_account = ret[-1]
@@ -61,32 +61,21 @@ def stack_dataframes(accounts_df) -> list[pd.DataFrame]:
         prev_top_as_bottom = prev_account.dailies.drop('bottom', axis=1).rename(columns={'top': 'bottom'}).bottom
         account_df.dailies = account_df.dailies.join(prev_top_as_bottom, how='outer')
 
-        # Fill NaNs in "bottom" (i.e. all dates that only appear in the current
-        # list) by padding the previous value [might not even be necessary?]
+        # Fill NaNs in "bottom" (i.e., all dates that are new to the stack now)
+        # by padding the previous value
         account_df.dailies.bottom.fillna(method='pad', inplace=True)
 
-        # Compute new "top" by adding the "bottom" and the cumsum of new transactions
+        # Compute new "top" by adding the cumsum of new transactions to the bottom values
         #  account_df.dailies['top'] = (prev_account.dailies.value + account_df.dailies.value).cumsum()
         #  account_df.dailies['top'] = prev_account.dailies.value.add(account_df.dailies.value, fill_value=0).cumsum()
         account_df.dailies['top'] = account_df.dailies.bottom.add(account_df.dailies.value.fillna(0).cumsum(), fill_value=0)
 
+        #  account_df.dailies.drop(['value', 'balance'], axis=1, inplace=True)
 
-        #  print(f'stacked (before resampling):\n{account_df.dailies}')
-        #  account_df.dailies = account_df.dailies.reindex(account_df.dailies.resample('1D').sum().index)
-
-        #  account_df.dailies = account_df.dailies.mask(account_df.dailies.shift(1) == account_df.dailies).dropna(how='all')
-
-
-        # Try dropping repeated values (to reduce number of drawn glyphs)
-        #  for window in account_df.dailies.rolling(window=3):
-            #  if len(window) == 3 and window.top.nunique() == 1:
-                #  print(f"window:\n{window}")
-                #  account_df.dailies.loc[window.index[1]].top = np.nan
-                #  print(f"window after nanning:\n{window}")
-                #  sys.exit(1)
-                #  pass
-
-        #  print(f'stacked:\n{account_df.dailies}')
+        # Drop any consecutive duplicate top/bottom value pairs, but definitely
+        # keep the very last value to be sure to plot the full x-value range:
+        df = account_df.dailies
+        account_df.dailies = df.loc[(df.top.shift() != df.top) | (df.bottom.shift() != df.bottom) | (df.index == df.index[-1])]
 
         ret.append(account_df)
 
