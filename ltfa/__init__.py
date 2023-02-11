@@ -82,7 +82,7 @@ def run(args) -> None:
             analysis.make_monthly_overview(fh, args.month_for_overview)
 
     if args.bokeh:
-        plotting_bokeh.makeplot_balances(accounts, annotations, analysis, args.bokeh)
+        plotting_bokeh.make(accounts, annotations, analysis, args.bokeh)
 
 
 def parse_args(args) -> argparse.Namespace:
