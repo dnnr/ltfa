@@ -78,35 +78,6 @@ def stack_dataframes(accounts_df) -> list[pd.DataFrame]:
 
         ret.append(account_df)
 
-    def fake_step_post_maker(df):
-        """
-        Fake a step-wise plot as a workaround for bokeh not supporting
-        step-wise vareas (see https://github.com/bokeh/bokeh/issues/12062): For
-        each entry, insert another one on the day right before (unless it
-        already exists) to repeat/pad the previous value.
-        """
-        for window in df.rolling(window=2, min_periods=0):
-            yield (window.index[0], window.iloc[0])
-            # Only consider full windows
-            if len(window) != 2:
-                continue
-
-            day_before = window.index[1] - datetime.timedelta(days=1)
-            # If the date already has a row, we cannot (need not) insert a fake row
-            if day_before != window.index[0]:
-                # Copy the first item in the window, but clear the "value" column:
-                fake_in = window.iloc[0].copy()
-                fake_in.value = np.nan
-                yield (day_before, fake_in)
-        else:
-            # The very last row:
-            yield (window.index[1], window.iloc[1])
-
-    for account in ret:
-        df_step_post = pd.DataFrame.from_dict(dict(fake_step_post_maker(account.dailies)), orient='index')
-        df_step_post.index.name = 'date'
-        account.dailies = df_step_post
-
     return ret
 
 
@@ -184,8 +155,8 @@ def add_balances_plot(figure, accounts, accounts_stacked, annotations, analysis)
         dailies = dailies[['top', 'bottom']]
         dailies_cds = bk.models.ColumnDataSource(dailies)
 
-        figure.varea(source=dailies_cds, x='date', y1='bottom', y2='top', color=this_color, fill_alpha=0.2, legend_label=account.meta.name)
-        figure.line(source=dailies_cds, x='date', y='top', color=this_color, line_width=1, legend_label=account.meta.name)
+        figure.varea_step(source=dailies_cds, x='date', y1='bottom', y2='top', step_mode='after', color=this_color, fill_alpha=0.2, legend_label=account.meta.name)
+        figure.step(source=dailies_cds, x='date', y='top', mode='after', color=this_color, line_width=1, legend_label=account.meta.name)
 
     # The tooltips are a bit hacky: We draw the same one for every marker
     # (balances and every transaction), but use custom formatter to hide the
