@@ -534,7 +534,6 @@ def make(accounts, annotations, analysis, file) -> None:
         add_spending_and_savings_plot(figure3, annotations, analysis)
         figures_to_plot += [figure3]
 
-
     figure2.height = 300
     figure3.height = 300
 
@@ -547,6 +546,9 @@ def make(accounts, annotations, analysis, file) -> None:
         figure.legend.click_policy = 'hide'
 
         figure.add_tools(bk.models.CrosshairTool(overlay=vertical_crosshair))
+
+    # Disabling document validation speeds up the process a bit:
+    bk.settings.settings.perform_document_validation = False
 
     # Note: gridplot got broken in 3.0.0 (still is in 3.0.1). It didn't draw
     # correctly. I switched to column() as a workaround, but it doesn't have
