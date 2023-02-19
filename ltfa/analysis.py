@@ -10,6 +10,7 @@ import re
 import functools
 from typing import Optional
 from operator import attrgetter
+from collections import defaultdict
 
 class Analysis():
     def __init__(self, accounts: list, salary_matchers: list) -> None:
@@ -259,13 +260,13 @@ class Analysis():
         max_peername_length = find_truncate_length(spending.peername, 25)
         max_subject_length = find_truncate_length(spending.subject, 120)
 
-        spending_strs = []
+        spending_strs_by_account = defaultdict(list)
         for t in sorted(spending.itertuples(), key=attrgetter('value')):
             subject = nicify(t.subject)
             subject = trunc_align(subject, max_subject_length)
             peername = nicify(t.peername)
             peername = trunc_align(peername, max_peername_length)
-            spending_strs.append(f'{t.value: >{longest_value}{value_format}} €  {peername}  {subject}  {t.account}')
+            spending_strs_by_account[t.account].append(f'{t.value: >{longest_value}{value_format}} €  {peername}  {subject}')
 
         def p(s=''):
             """Print-to-file helper"""
@@ -277,6 +278,9 @@ class Analysis():
         p(f'Total spending: {total_spending} €')
         p(f'Capital gains: {capgains} €')
         p()
-        p('Spending transactions')
-        p('---------------------')
-        p('\n'.join(spending_strs))
+        for account, lines in spending_strs_by_account.items():
+            p()
+            header = f'Spending transactions: {account}'
+            p(header)
+            p('-' * len(header))
+            p('\n'.join(lines))
