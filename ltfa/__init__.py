@@ -131,19 +131,24 @@ def accounts_to_dataframes(accounts) -> list[pd.DataFrame]:
     for account in accounts:
         asset_type = account.config.get('asset-type')
         # Assume that the initial balance has always been there:
-        startat: list[tuple] = [(pd.to_datetime(beginningoftime), float(account.initial_balance), 'ltfa', 'Initial account balance', True, account.name, asset_type)]
+        startat: list[tuple] = [(beginningoftime, float(account.initial_balance), 'ltfa', 'Initial account balance', True, account.name, asset_type)]
 
         # Add an empty transaction at the end
-        endat: list[tuple] = [(pd.to_datetime(endoftime), float(0), [])]
+        endat: list[tuple] = [(endoftime, float(0), [])]
 
         # Turn account transactions into dataframe
         txns = pd.DataFrame(
-            startat + [(pd.to_datetime(txn.date), float(txn.value), getattr(txn, 'peername', 'n/a'), txn.subject, txn.isneutral, account.name, asset_type) for txn in account.txns] + endat,
+            startat + [(txn.date, float(txn.value), getattr(txn, 'peername', 'n/a'), txn.subject, txn.isneutral, account.name, asset_type) for txn in account.txns] + endat,
             columns=['date', 'value', 'peername', 'subject', 'isneutral', 'account', 'asset_type']).astype(
                 {
                     'isneutral': 'boolean',
                 }
             )
+
+        # Converting all dates in a single Series call is much faster than
+        # doing it within he list comprehension:
+        txns['date'] = pd.to_datetime(txns.date, format='%Y-%m-%d')
+
         txns.set_index('date', inplace=True)
 
         # Sum up transactions of each day
