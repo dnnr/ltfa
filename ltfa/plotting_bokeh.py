@@ -186,8 +186,8 @@ def add_balances_plot(figure, accounts, accounts_stacked, annotations, analysis)
         # Draw lines and areas only for regions where the account has non-zero
         # value (but use expand_mask so that the first and last zero-value
         # entries are included, otherwise we'll get weird drawing artifacts)
-        valid_values_mask = expand_mask(dailies.bottom != dailies.top)
-        dailies = dailies.where(valid_values_mask)
+        relevant_values_mask = (dailies.bottom != dailies.top).rolling(window=3, min_periods=2, center=True).max().astype(bool)
+        dailies = dailies.where(relevant_values_mask)
         dailies = dailies[['top', 'bottom']]
         dailies_cds = bk.models.ColumnDataSource(dailies)
 
@@ -473,18 +473,6 @@ def calc_spending_and_salary_ewms(analysis, ewm_years):
     salary_ewm = salary.resample('1M').sum().fillna(0).ewm(span=ewm_years * 365 / 30.4).mean()
 
     return savings_ewm, salary_ewm, salary_monthly_sum
-
-
-def expand_mask(mask) -> pd.DataFrame:
-    """ Helper that takes a bool selection mask and adds all non-selected items
-    that are next to selected ones into the selection. """
-    ret = mask.copy()
-    for idx, value in enumerate(mask):
-        if idx > 0 and ret[-1]:
-            ret.iloc[idx] = True
-        elif idx + 1 < len(mask) and mask[idx + 1]:
-            ret.iloc[idx] = True
-    return ret
 
 
 def prepare_figure(title, y_axis_label, y_tick_format) -> bk.plotting.figure:
