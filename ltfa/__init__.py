@@ -26,7 +26,7 @@ def run(args) -> None:
 
     # Read and parse configuration
     try:
-        config = yaml.safe_load(args.config)
+        config = yaml.load(args.config, Loader=yaml.CSafeLoader)
 
         for accountcfg in config['accounts']:
             if not accountcfg.get('active'):
