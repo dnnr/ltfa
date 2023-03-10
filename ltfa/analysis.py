@@ -76,6 +76,8 @@ class Analysis():
             for k, v in matcher.items():
                 if k == 'peername':
                     mask &= df.peername.str.contains(v, case=False)
+                elif k == 'peeraccount':
+                    mask &= df.peeraccount == v
                 elif k == 'subject':
                     mask &= df.subject.str.contains(v, case=False)
                 elif k == 'minimum-value':
