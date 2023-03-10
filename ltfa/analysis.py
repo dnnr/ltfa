@@ -19,11 +19,19 @@ class Analysis():
 
         self.txns = pd.concat([a.txns for a in accounts], sort=True).sort_index()
 
+        if logging.getLogger().isEnabledFor(logging.DEBUG):
+            self.debug_log_salary()
+
         self.daily_savings = self.compute_daily_savings(accounts)
 
         self.salary = self.txns[self.txns['salary']][['value']]
 
         self.analyze_capgains(accounts)
+
+    def debug_log_salary(self):
+        for txn in self.txns[self.txns.salary][['value', 'subject', 'peername', 'account']].itertuples(name='Salary'):
+            txn = txn._replace(Index = str(txn.Index.date()))
+            logging.debug(txn)
 
     def get_averaged_capgains(self, ewm_span_years: Optional[float] = None) -> SimpleNamespace:
         if ewm_span_years:
