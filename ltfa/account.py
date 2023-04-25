@@ -346,16 +346,16 @@ class Account:
             for srcname in sources:
                 with open(srcname, 'r') as sfh:
                     jdata = simplejson.load(sfh, use_decimal=True)
-                    balance = jdata[jbcfg['keys']['balance']]
-                    date = jdata[jbcfg['keys']['date']]
-                    entry = {
-                        'date': dateutil.parser.parse(date).date(),
-                        'balance': balance,
-                        'remark': 'Loaded from {}'.format(srcname),
-                        #'interpolate': False,
-                    }
-                    balances.append(entry)
-                    logging.debug("{}: Loaded balance from JSON: {}".format(self.name, entry))
+                    date_key = jbcfg['keys']['date']
+                    balance_key = jbcfg['keys']['balance']
+                    entries = jdata if isinstance(jdata, list) else [jdata]
+                    for entry in entries:
+                        balances.append({
+                            'date': dateutil.parser.parse(entry[date_key]).date(),
+                            'balance': entry[balance_key],
+                            'remark': 'Loaded from {}'.format(srcname),
+                        })
+                        logging.debug("{}: Loaded balance from JSON: {}".format(self.name, entry))
 
         # Sort it
         balances = sorted(balances, key=itemgetter('date'))
