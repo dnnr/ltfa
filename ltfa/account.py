@@ -208,7 +208,7 @@ class Account:
 
         for c in defs:
             filepath = os.path.expanduser(c['file'])
-            txns = CsvLoader.load_txns(filepath, c['format'], c.get('filter') or {})
+            txns = CsvLoader.load_txns(filepath, c['format'], c.get('filters') or [])
 
             # Those are usually a lot, don't log them individually:
             logging.debug("{}: Adding {} txns from CSV".format(self.name, len(txns)))

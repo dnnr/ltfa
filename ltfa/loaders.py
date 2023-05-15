@@ -43,7 +43,7 @@ class CsvLoader:
         return Decimal(s)
 
     @staticmethod
-    def load_txns(filepath, formatcfg, filterlist):
+    def load_txns(filepath, formatcfg, filters=[]):
         with open(filepath, 'r', errors='replace') as csvfile:
             delimiter = formatcfg.get('delimiter') or None
 
@@ -98,9 +98,7 @@ class CsvLoader:
                     logging.debug("Ignoring zero-value CSV entry with no balance: {}".format(fieldmap))
                     continue
 
-                # Verify transaction against configured filters:
-                if not all(fieldmap[fkey] == fval for fkey, fval in filterlist.items()):
-                    logging.debug("Ignoring entry not matching filter conditions: {}".format(fieldmap))
+                if not CsvLoader._filters_say_keep(filters, fieldmap):
                     continue
 
                 # Construct Transaction object using values expected by the
@@ -122,3 +120,29 @@ class CsvLoader:
             txns.sort(key=attrgetter('date'))
 
             return txns
+
+    @staticmethod
+    def _filters_say_keep(filters, fieldmap):
+        if filters == []:
+            return True
+
+        # First matching rule decides
+        for f in filters:
+            if list(f.keys()) == ['include']:
+                rules = f['include']
+                if all(fieldmap[fkey] == fval for fkey, fval in rules.items()):
+                    return True
+            elif list(f.keys()) == ['exclude']:
+                rules = f['exclude']
+                if all(fieldmap[fkey] == fval for fkey, fval in rules.items()):
+                    logging.debug("Ignoring entry matching exclude filter: {}".format(fieldmap))
+                    return False
+            else:
+                raise Exception(f'Unexpected filter definition: {f.keys()}')
+
+        # No rule matched => If there was at least one include rule, skip the entry
+        if any(list(f.keys()) == ['include'] for f in filters):
+            logging.debug("Include filters are defined but entry did not match any of them: {}".format(fieldmap))
+            return False
+
+        return True
