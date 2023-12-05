@@ -1,12 +1,12 @@
-8y ewm final values:
+8y ewm:
 	invested     = 1418 €
 	gains p.a.   = 71 €
 	returns p.a. = 5.00%
-4y ewm final values:
+4y ewm:
 	invested     = 1499 €
 	gains p.a.   = 75 €
 	returns p.a. = 5.00%
-2y ewm final values:
+2y ewm:
 	invested     = 1566 €
 	gains p.a.   = 78 €
 	returns p.a. = 5.00%

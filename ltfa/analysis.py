@@ -191,7 +191,7 @@ class Analysis():
         for i in (8, 4, 2):
             ret = self.get_averaged_capgains(ewm_span_years=i)
 
-            p("{}y ewm final values:".format(i))
+            p("{}y ewm:".format(i))
             p("\tinvested     = {:.0f} €".format(ret.totalinvest.totalinvest[-1]))
             p("\tgains p.a.   = {:.0f} €".format(ret.gainspa.gains[-1]))
             p("\treturns p.a. = {:.2%}".format(ret.returns.returns[-1]))
@@ -212,6 +212,7 @@ class Analysis():
         # Discrete, cumulated stats for each calendar year ('A' means year-end):
         yearlyreturns = self.gains.resample('A').sum().merge(self.totalinvest.resample('A').mean(),
                                                               left_index=True, right_index=True)
+        longest_return_rate_string = max(len("{:.2%}".format(item['gains'] / item['totalinvest'])) for _, item in yearlyreturns.iterrows())
         for date, item in yearlyreturns.iterrows():
             if date > pd.Timestamp(self.capgains_endoftime):
                 # Skip current year if it hasn't concluded yet (see stats for past
@@ -224,7 +225,7 @@ class Analysis():
 
             gains = item['gains']
             invested = item['totalinvest']
-            p("Return rate in {}: {:.2%} ({:.0f} € gains on {:.0f} € invested)".format(
+            p(('Return rate in {}: {:' + str(longest_return_rate_string) + '.2%} ({:.0f} € gains on {:.0f} € invested)').format(
                 date.year, gains / invested, gains, invested
                 ))
 
@@ -239,7 +240,7 @@ class Analysis():
             invested_yoy = self.totalinvest[one_year_before : self.capgains_endoftime].mean().totalinvest
             gains_yoy = self.gains[one_year_before : self.capgains_endoftime].sum().gains
 
-            p('Return rate past 1y: {:.2%} ({:.0f} € gains on {:.0f} € invested)'.format(
+            p(('Return rate past 1y: {:' + str(longest_return_rate_string) + '.2%} ({:.0f} € gains on {:.0f} € invested)').format(
                 gains_yoy / invested_yoy, gains_yoy, invested_yoy
                 ))
         stats_for_yoy()
