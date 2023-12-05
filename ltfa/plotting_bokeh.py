@@ -8,7 +8,6 @@ import matplotlib.colors
 import logging
 import datetime
 from types import SimpleNamespace
-from ltfa.util import color_scale_lightness
 from typing import Generator
 
 def color_gen() -> Generator:
@@ -63,7 +62,7 @@ def stack_dataframes(accounts_df) -> list[pd.DataFrame]:
 
         # Fill NaNs in "bottom" (i.e., all dates that are new to the stack now)
         # by padding the previous value
-        account_df.dailies.bottom.fillna(method='pad', inplace=True)
+        account_df.dailies.bottom.ffill(inplace=True)
 
         # Compute new "top" by adding the cumsum of new transactions to the bottom values
         #  account_df.dailies['top'] = (prev_account.dailies.value + account_df.dailies.value).cumsum()
@@ -117,16 +116,10 @@ def add_balances_plot(figure, accounts, accounts_stacked, annotations, analysis)
     for account in accounts_stacked:
         # Also compute a lighter color for the tooltip circles so that the line
         # itself (drawn on top) remains visible even if there are many
-        # overlapping circles. Note that this can be done easier (see commented
-        # out code) but before bokeh-3.0 that triggers an HSL() deprecation
-        # warning, see https://github.com/bokeh/bokeh/issues/11845.
-        # Easier variant, doesn't need util function:
-        #  lighter_color = bk.colors.RGB(*[x * 255 for x in matplotlib.colors.to_rgb(this_color)]).lighten(0.2)
-        #  lighterer_color = bk.colors.RGB(*[x * 255 for x in matplotlib.colors.to_rgb(this_color)]).lighten(0.3)
-
+        # overlapping circles.
         this_color = next(colors)
-        lighter_color = bk.colors.RGB(*[int(x * 255) for x in color_scale_lightness(matplotlib.colors.to_rgb(this_color), 1.4)])
-        lighterer_color = bk.colors.RGB(*[int(x * 255) for x in color_scale_lightness(matplotlib.colors.to_rgb(this_color), 1.55)])
+        lighter_color = bk.colors.RGB(*[int(x * 255) for x in matplotlib.colors.to_rgb(this_color)]).lighten(0.2)
+        lighterer_color = bk.colors.RGB(*[int(x * 255) for x in matplotlib.colors.to_rgb(this_color)]).lighten(0.3)
 
         dailies = account.dailies
 

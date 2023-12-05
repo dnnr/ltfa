@@ -177,7 +177,7 @@ def accounts_to_dataframes(accounts) -> list[pd.DataFrame]:
         txns.set_index('date', inplace=True)
 
         # Sum up transactions of each day
-        dailies = txns.groupby(level='date').agg(dict(value=sum))
+        dailies = txns.groupby(level='date').agg(dict(value="sum"))
 
         # Compute balance for each day that has a transaction
         dailies['balance'] = dailies.value.cumsum()
