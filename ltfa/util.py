@@ -24,10 +24,3 @@ def daycount_tostring(days: int) -> str:
         return "{:.2g} year{}".format(years, 's' if years > 1 else '')
     else:
         return "{} days".format(days)
-
-
-def color_scale_lightness(rgb: list[int], lightness_factor: float) -> tuple[float, float, float]:
-    # First convert to HLS
-    h, l, s = colorsys.rgb_to_hls(*rgb)
-    # Then manipulate L and convert back to RGB
-    return colorsys.hls_to_rgb(h, min(1, l * lightness_factor), s)
