@@ -192,21 +192,21 @@ class Analysis():
             ret = self.get_averaged_capgains(ewm_span_years=i)
 
             p("{}y ewm:".format(i))
-            p("\tinvested     = {:.0f} €".format(ret.totalinvest.totalinvest[-1]))
-            p("\tgains p.a.   = {:.0f} €".format(ret.gainspa.gains[-1]))
-            p("\treturns p.a. = {:.2%}".format(ret.returns.returns[-1]))
+            p("\tinvested     = {:.0f} €".format(ret.totalinvest.totalinvest.iloc[-1]))
+            p("\tgains p.a.   = {:.0f} €".format(ret.gainspa.gains.iloc[-1]))
+            p("\treturns p.a. = {:.2%}".format(ret.returns.returns.iloc[-1]))
 
         # Overall results (annualized) up to $now:
         overall = self.get_averaged_capgains()
 
         period = daycount_tostring((self.capgains_endoftime - self.capgains_beginningoftime).days)
         p("Statistics over all time ({}):".format(period))
-        p("\tAvg. invested amount: {:.0f} €".format(overall.totalinvest.totalinvest[-1]))
+        p("\tAvg. invested amount: {:.0f} €".format(overall.totalinvest.totalinvest.iloc[-1]))
         p("\tTotal capital gains: {:.0f} €".format(self.gains.gains.sum()))
-        p("\tAvg. capital gains (p.a.): {:.0f} €".format(overall.gainspa.gains[-1]))
+        p("\tAvg. capital gains (p.a.): {:.0f} €".format(overall.gainspa.gains.iloc[-1]))
         # Note: Compounding is implicitly part of this metric because we look
         # at the actual avg. invested amount.
-        p("\tAvg. returns (p.a.): {:.2%}".format(overall.returns.returns[-1]))
+        p("\tAvg. returns (p.a.): {:.2%}".format(overall.returns.returns.iloc[-1]))
 
 
         # Discrete, cumulated stats for each calendar year ('A' means year-end):
