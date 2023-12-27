@@ -315,6 +315,7 @@ def add_capital_returns_plot(figure, accounts, annotations, analysis) -> None:
     # Add columns for all the EWM ranges we want so that we can use a single
     # shared CDS for the whole plot:
     ewm_years = [8, 4, 2]
+    ewm_years = []  # no more EWM at all for now; they proved to be more noisy than useful
 
     df = analysis.get_averaged_capgains().returns[['returns']]
     for years in ewm_years:
@@ -331,11 +332,11 @@ def add_capital_returns_plot(figure, accounts, annotations, analysis) -> None:
         alpha=1,
         with_varea=True,
         with_hover=True,
-        legend_label=f'all-time',
+        legend_label=f'Capital returns (% p.a.)',
     )
 
     # Returns at several window sizes (smaller windows at more transparency)
-    for idx, years in enumerate([8, 4, 2]):
+    for idx, years in enumerate(ewm_years):
         column = f'returns_ewm_{years}'
         returnsplotter(
             column=column,
@@ -350,7 +351,7 @@ def add_capital_returns_plot(figure, accounts, annotations, analysis) -> None:
     annotations_guideline.name ='value'
 
     if 'capgains' in annotations:
-        add_annotations(figure, annotations['capgains'], annotations_guideline, 0.15)
+        add_annotations(figure, annotations['capgains'], annotations_guideline, y_offset_factor=0.15, color='green', legend_label='Market annotations')
 
 
 def add_spending_and_savings_plot(figure, annotations, analysis) -> None:
@@ -486,8 +487,8 @@ def make(accounts, annotations, analysis, file) -> None:
         add_spending_and_savings_plot(figure3, annotations, analysis)
         figures_to_plot += [figure3]
 
-    figure2.height = 300
-    figure3.height = 300
+    figure2.height = 250
+    figure3.height = 350
 
     # Suppressing mypy error, not sure how to fix it...
     vertical_crosshair = bk.models.Span(dimension='height', line_dash='dotted', line_width=1)  # type: ignore[attr-defined]
