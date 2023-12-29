@@ -439,7 +439,7 @@ class Account:
         # Handle special case: Any checkpoints with earlier dates than the
         # first regular transaction must be inserted first.
         # FIXME: I suspect this whole thing could be implemented in a better way.
-        while txnq and txnq[0].date < self.txns[0].date:
+        while txnq and (len(self.txns) == 0 or txnq[0].date < self.txns[0].date):
             newt = txnq.popleft()
             newt.value = newt.balance - curbalance
             curbalance = newt.balance
