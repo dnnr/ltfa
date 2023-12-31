@@ -64,6 +64,9 @@ class Account:
         # balances being accurate:
         self._insert_balance_checkpoints()
 
+        # Auto-infer again to handle possible inter-account balance checkpoints
+        self._autoinfer_txns(accounts)
+
         self._recompute_balances()
 
         stillnegative = False
@@ -151,6 +154,9 @@ class Account:
             if account is self or account.config['asset-type'] == 'shared-liquidity':
                 continue
             for txn in account.txns:
+                if type(txn.peeraccount) is Account:
+                    # already auto-inferred, ignore
+                    continue
                 for matchset in matchsets:
                     ismatch = all(txn.match(*pair) for pair in matchset.items())
                     if ismatch:
@@ -161,6 +167,14 @@ class Account:
         # Construct counter transactions:
         newtxns = []
         for txn, account in matches:
+            if txn.isneutral != None:
+                logging.warning(
+                    "{}: Auto-infer match found in account {} already marked as isneutral={}, this should never happen! Not creating a counter transaction for this.".format(
+                        self.name, account.name, txn.isneutral
+                    )
+                )
+                continue
+
             newtxns.append(
                 Transaction(
                     value=-txn.value,
@@ -173,17 +187,11 @@ class Account:
                     isneutral=True,
                 )
             )
-            if txn.isneutral != None:
-                logging.warning(
-                    "{}: Auto-infer match found in account {} already marked as isneutral={}, this shouldn't happen!".format(
-                        self.name, account.name, txn.isneutral
-                    )
-                )
-            else:
-                txn.isneutral = True
-                # Update peeraccount to point to actual Account object instead
-                # of its name:
-                txn.peeraccount = self
+
+            txn.isneutral = True
+            # Update peeraccount to point to actual Account object instead
+            # of its name:
+            txn.peeraccount = self
 
         # Log new txns in date-order for clarity:
         for t in sorted(newtxns, key=attrgetter('date')):
@@ -420,6 +428,13 @@ class Account:
                 # Assuming that balance checkpoints already reflect "hidden" changes in wealth:
                 isneutral=False,
             )
+
+            # This is a bit hacky but serves the current use case:
+            balance_checkpoint_behavior = self.config.get('balance-checkpoint-behavior') or {}
+            if 'peeraccount' in balance_checkpoint_behavior:
+                t.peeraccount = balance_checkpoint_behavior['peeraccount']
+                t.isneutral = None
+
             checkpoint_txns.append(t)
 
             logging.debug("{}: Preparing fixed balance checkpoint: {}, balance={}".format(self.name, t.date, t.balance))
