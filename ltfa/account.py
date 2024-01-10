@@ -342,9 +342,11 @@ class Account:
         into a unified list.
         """
         balances: list[dict] = []
+        seen_dates: set = set()
 
         # Add YAML balances:
         balances.extend(self.config.get('balances') or [])
+        seen_dates.update(b['date'] for b in balances)
 
         # Add JSON balances:
         for jbcfg in self.config.get('json-balances') or []:
@@ -358,8 +360,16 @@ class Account:
                     balance_key = jbcfg['keys']['balance']
                     entries = jdata if isinstance(jdata, list) else [jdata]
                     for entry in entries:
+                        date = dateutil.parser.parse(entry[date_key]).date()
+
+                        # YAML balances shall take precedence over JSON balances:
+                        if date in seen_dates:
+                            logging.debug("{}: Ignoring balance from JSON because of overriding YAML balance for same date: {}".format(self.name, entry))
+                            continue
+
+                        seen_dates.add(date)
                         balances.append({
-                            'date': dateutil.parser.parse(entry[date_key]).date(),
+                            'date': date,
                             'balance': entry[balance_key],
                             'remark': 'Loaded from {}'.format(srcname),
                         })
