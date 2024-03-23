@@ -219,8 +219,9 @@ class Analysis():
                 # year instead)
                 continue
 
-            if date - datetime.timedelta(days=365) < pd.Timestamp(self.capgains_beginningoftime):
-                # Skip incomplete first year
+            first_year_is_incomplete = not (self.capgains_beginningoftime.day == 1 and self.capgains_beginningoftime.month == 1)
+            if first_year_is_incomplete and date.year == self.capgains_beginningoftime.year:
+                # Do not show yearly returns for the incomplete first year
                 continue
 
             gains = item['gains']
