@@ -1,0 +1,19 @@
+8y ewm:
+	invested     = 1028 €
+	gains p.a.   = 51 €
+	returns p.a. = 4.99%
+4y ewm:
+	invested     = 1031 €
+	gains p.a.   = 52 €
+	returns p.a. = 5.00%
+2y ewm:
+	invested     = 1037 €
+	gains p.a.   = 52 €
+	returns p.a. = 5.00%
+Statistics over all time (2 years):
+	Avg. invested amount: 1025 €
+	Total capital gains: 102 €
+	Avg. capital gains (p.a.): 51 €
+	Avg. returns (p.a.): 4.99%
+Return rate in 2014: 5.00% (52 € gains on 1038 € invested)
+Return rate past 1y: 5.00% (52 € gains on 1050 € invested)
