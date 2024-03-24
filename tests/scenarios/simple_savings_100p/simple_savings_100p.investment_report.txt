@@ -1,0 +1,28 @@
+8y ewm:
+	invested     = 202653 €
+	gains p.a.   = 202008 €
+	returns p.a. = 99.68%
+4y ewm:
+	invested     = 292116 €
+	gains p.a.   = 291088 €
+	returns p.a. = 99.65%
+2y ewm:
+	invested     = 398332 €
+	gains p.a.   = 396610 €
+	returns p.a. = 99.57%
+Statistics over all time (10 years):
+	Avg. invested amount: 102515 €
+	Total capital gains: 1023000 €
+	Avg. capital gains (p.a.): 102216 €
+	Avg. returns (p.a.): 99.71%
+Return rate in 2010: 99.73% (997 € gains on 1000 € invested)
+Return rate in 2011: 99.86% (1997 € gains on 2000 € invested)
+Return rate in 2012: 99.86% (3995 € gains on 4000 € invested)
+Return rate in 2013: 99.86% (7989 € gains on 8000 € invested)
+Return rate in 2014: 99.86% (15978 € gains on 16000 € invested)
+Return rate in 2015: 99.86% (31956 € gains on 32000 € invested)
+Return rate in 2016: 99.86% (63913 € gains on 64000 € invested)
+Return rate in 2017: 99.86% (127824 € gains on 128000 € invested)
+Return rate in 2018: 99.86% (255649 € gains on 256000 € invested)
+Return rate in 2019: 99.86% (511299 € gains on 512000 € invested)
+Return rate past 1y: 99.73% (512000 € gains on 513403 € invested)
