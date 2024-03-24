@@ -105,15 +105,6 @@ class Analysis():
         df.loc[combined_mask, 'salary'] = True
 
     def analyze_capgains(self, accounts) -> None:
-        # Relevant base metrics for plotting capital gains:
-        #  * invested amount (equals balance, already known)
-        #  * any gains and losses
-        # What to plot:
-        #  * for all investment accounts, make a stacked plot of their balance
-        #    (Note: any kind of distinguishably drawn plot for neutral/non-neutral txns doesn't really work well, don't try again!)
-        #  * overlaid, on the same y-axis, plot the overall yearly returns (absolute value) on a 1y moving window
-        #  * overlaid, on a different y-axis, plot the overall return rates on a 1y moving window
-
         # Only consider non-empty, investment-type accounts from here onwards:
         accounts = [a for a in accounts if
                     a.meta.config.get('asset-type') == 'investment'
