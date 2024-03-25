@@ -118,66 +118,79 @@ class Analysis():
             return
 
         # Determine date range of investment data
-        #  self.capgains_beginningoftime = min([min(a.txns.index) for a in accounts if a.txns.any()])
-        #  self.capgains_endoftime = max([max(a.txns.index) for a in accounts if a.txns.any()])
         self.capgains_beginningoftime = min([a.txns.index.min() for a in accounts])
         self.capgains_endoftime = max([a.txns.index.max() for a in accounts])
 
-        # Compute total invested amount for each day from _all_ txns in _all_
-        # accounts.
-        # WATCH OUT: This gets massively distorted by balance checkpoint
-        # interpolation! Those interpolation points increase the assumed invested
-        # amount even though that money was not yet being invested because it was
-        # not yet paid out!
-        # => Be very careful with using interpolation in the configuration of
-        #    investment accounts! Only enable it when you can really assume a
-        #    continuous payout which you just don't know the dates of! Don't just
-        #    use it to smooth the graphs! When in doubt, assume payout at the end
-        #    of an investment.
-        # 1. Bring all transactions together and sort them
-        totalinvest = pd.concat([a.txns[['value']] for a in accounts], sort=True).sort_index()
-        # 2. Keep only one row per day (simply summing up the values)
-        totalinvest = totalinvest.groupby(level='date').sum()
-        # 3. Build the cumulative sum and call it "balance"
-        totalinvest = totalinvest.cumsum().rename(columns={'value': 'totalinvest'})
-        # 4. Fill missing data by padding the value (unchanged balance)
-        totalinvest = totalinvest.resample('1D').ffill()
+        # Compute invested amounts and gains on a per-account basis. Doing this
+        # separately is essential for the gains interpolation to work (see below).
 
-        # Combine non-neutral txns (i.e., gains and losses) from all accounts, and
-        # make sure the series starts at the "beginning of time", i.e., potentially
-        # before the first actual gain.
-        gains_beginning = pd.DataFrame([(totalinvest.index[0], float(0))], columns=['date', 'value']).set_index('date')
-        gains = pd.concat([gains_beginning] + [a.txns[a.txns.isneutral == False][['value']] for a in accounts], sort=True)
-        gains = gains.rename(columns={'value': 'gains'})
+        all_invest = []
+        all_gains = []
+        for account in accounts:
+            # Compute total invested amount for each day.
+            # WATCH OUT: This gets massively distorted by balance checkpoint
+            # interpolation! Those interpolation points increase the assumed invested
+            # amount even though that money was not yet being invested because it was
+            # not yet paid out!
+            # => Be very careful with using interpolation in the configuration of
+            #    investment accounts! Only enable it when you can really assume a
+            #    continuous payout which you just don't know the dates of! Don't just
+            #    use it to smooth the graphs! When in doubt, assume payout at the end
+            #    of an investment.
+
+            # Invest: Start with all txn values and make sure the series is
+            # extended as far as the most recent investment balance globally.
+            # This makes sure that it contributes to the total sum even though
+            # it hasn't been changed in a while.
+            invest = account.txns[['value']]
+            invest_endoftime = pd.DataFrame([(self.capgains_endoftime, float(0))], columns=['date', 'value']).set_index('date')
+            invest = pd.concat([invest, invest_endoftime], sort=True).sort_index()
+            # Sum up values per day (eliminates possible duplicate zero-value entries from loading)
+            invest = invest.groupby(level='date').sum()
+            # Build cumulative sum, i.e., balance
+            invest = invest.cumsum().rename(columns={'value': 'invest'})
+
+            # Fill missing data by padding the value (same balance as previous day)
+            invest = invest.resample('1D').ffill()
+
+            # Gains: Gather all non-neutral txns and make sure the series starts
+            # exactly when the balance first is greater than zero, since that is
+            # when the investment begins (even if the first gain comes much later)
+            gains_beginning = pd.DataFrame([(invest[invest.invest > 0].index[0], float(0))], columns=['date', 'value']).set_index('date')
+            gains = pd.concat([gains_beginning] + [account.txns[account.txns.isneutral == False][['value']]], sort=True)
+            gains = gains.rename(columns={'value': 'gains'})
+            gains = gains.groupby(level='date').sum()
+
+            # Upsample to daily values (missing data will be NaN)
+            gains = gains.resample('1D').mean()
+
+            # Redistribute gains evenly over all days. The assumption is that a
+            # particular gain can be attributed to all NaN-days leading up to it. Note
+            # that this approach is very different to interpolating balance checkpoints
+            # early in the pipeline, which can distort our calculations of the invested
+            # amount. Just distributing the gains like this appears to be the only way
+            # to get useful EWMH plots out of the data.
+            gains_redistributed = gains.cumsum().interpolate().diff()
+
+            # Calling diff() inherently discards the very first value (sets it
+            # to zero), but it's still a gain that needs to be included, so we
+            # restore it manually here:
+            gains_redistributed.iloc[0] = gains.iloc[0]
+            gains = gains_redistributed
+
+            all_invest.append(invest)
+            all_gains.append(gains)
+
+        totalinvest = pd.concat(all_invest, sort=True).sort_index()
+        totalinvest = totalinvest.groupby(level='date').sum().rename(columns={'invest': 'totalinvest'})
+
+        gains = pd.concat(all_gains, sort=True).sort_index()
         gains = gains.groupby(level='date').sum()
 
-        # Before upsampling, keep record of the first actual gain (before
-        # upsampling). This is useful for plotting, since the data before that
-        # is likely distorted by the investement balance average "settling
-        # down".
-        self.date_of_first_actual_gain = gains[gains.gains > 0].index[0]
-
-        # Upsample to daily values (missing data will be NaN)
-        gains = gains.resample('1D').mean()
-
-        # Redistribute gains evenly over all days. The assumption is, that a
-        # particular gain can be attributed to all NaN-days coming up to it. Note
-        # that this approach is very different to interpolating balance checkpoints
-        # early in the pipeline, which can distort our calculations of the invested
-        # amount. Just distributing the gains like this appears to be the only way
-        # to get useful EWMH plots out of the data.
-        gains_redistributed = gains.cumsum().interpolate().diff()
-
-        # Calling diff() inherently discards the very first value (sets it to
-        # zero), but it's still a gain that needs to be included, so we restore
-        # it manually here:
-        gains_redistributed.iloc[0] = gains.iloc[0]
-        gains = gains_redistributed
-
-        # Daily balance of invested money (total on that day)
+        # Daily balance of invested money (total for each particular day)
         self.totalinvest = totalinvest
 
-        # Daily amount of capital gains (earned on that day only)
+        # Daily amount of capital gains (what was gained on each particular day)
         self.gains = gains
 
 
