@@ -283,7 +283,7 @@ def add_invest_and_gains_plot(figure, accounts, annotations, analysis) -> None:
                                          toggleable=False,
                                          formatters={
                                              '@date': 'datetime',
-                                             '@gains': custom_hovertool_formatter(),
+                                             '@gains_cumsum': custom_hovertool_formatter(),
                                          },
                                          tooltips=[
                                              ('Date', '@date{%F (%a)}'),
