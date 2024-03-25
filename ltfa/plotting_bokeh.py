@@ -287,7 +287,7 @@ def add_invest_and_gains_plot(figure, accounts, annotations, analysis) -> None:
                                          },
                                          tooltips=[
                                              ('Date', '@date{%F (%a)}'),
-                                             (gains_label, '€ @gains{currency}'),
+                                             (gains_label, '€ @gains_cumsum{currency}'),
                                          ]
                                          ))
 
