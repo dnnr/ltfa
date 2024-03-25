@@ -321,8 +321,6 @@ def add_capital_returns_plot(figure, accounts, annotations, analysis) -> None:
     for years in ewm_years:
         df[f'returns_ewm_{years}'] = analysis.get_averaged_capgains(ewm_span_years=years).returns.returns
 
-    df = df[df.index >= analysis.date_of_first_actual_gain]
-
     cds = bk.models.ColumnDataSource(df)
     returnsplotter = functools.partial(plotreturns, figure, cds, line_width=1.3, color='green')
 
