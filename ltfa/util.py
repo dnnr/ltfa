@@ -1,4 +1,6 @@
 import colorsys
+from contextlib import contextmanager
+import sys
 
 class LtfaError(Exception):
     """Error: {}"""
@@ -24,3 +26,11 @@ def daycount_tostring(days: int) -> str:
         return "{:.2g} year{}".format(years, 's' if years > 1 else '')
     else:
         return "{} days".format(days)
+
+@contextmanager
+def file_or_stdout(filename):
+    if str(filename) == '/dev/stdout':
+        yield sys.stdout
+    else:
+        with open(filename, 'w') as fh:
+            yield fh
