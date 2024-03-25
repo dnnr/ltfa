@@ -17,6 +17,7 @@ from ltfa.account import Account, Transaction
 from ltfa import plotting_bokeh
 from ltfa.analysis import Analysis
 from ltfa.util import LtfaError
+from ltfa.util import file_or_stdout
 
 def run(args) -> None:
     # Set up logging
@@ -71,14 +72,14 @@ def run(args) -> None:
     analysis = Analysis(accounts, salary_matchers)
 
     if args.investment_report and analysis.has_capgains:
-        with open(args.investment_report, 'w') as fh:
+        with file_or_stdout(args.investment_report) as fh:
             analysis.make_capgains_analysis(fh)
 
     if args.monthly_overview:
         if not args.month_for_overview:
             one_month_ago = datetime.date.today() - dateutil.relativedelta.relativedelta(months=1)
             args.month_for_overview = one_month_ago.strftime('%Y-%m')
-        with open(args.monthly_overview, 'w') as fh:
+        with file_or_stdout(args.monthly_overview) as fh:
             analysis.make_monthly_overview(fh, args.month_for_overview)
 
     if args.bokeh:
@@ -113,7 +114,7 @@ def parse_args(args) -> argparse.Namespace:
     argparser.add_argument('-B', '--bokeh', type=Path, metavar='FILE', help='Write bokeh visualization to this file')
     argparser.add_argument('-I', '--investment-report', nargs='?', type=Path, metavar='FILE', const='/dev/stdout', help='File to write investment report into (default: stdout)')
 
-    argparser.add_argument('-M', '--monthly-overview', nargs='?', type=Path, metavar='FILE', const='/dev/stdout', help='File to write montly report into (default: /dev/stdout)')
+    argparser.add_argument('-M', '--monthly-overview', nargs='?', type=Path, metavar='FILE', const='/dev/stdout', help='File to write montly report into (default: stdout)')
     argparser.add_argument('--month-for-overview', nargs='?', type=str, metavar='YYYY-MM', help='Month to use for monthly overview (default: last month)')
 
     return argparser.parse_args(args)
