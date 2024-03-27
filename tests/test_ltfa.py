@@ -12,6 +12,7 @@ import ltfa.util
 @pytest.mark.parametrize(
     'scenario',
     (
+        'first_txn_is_gain',
         'savings_negative_gains',
         'savings_varying_interest',
         'shared_ownership',
