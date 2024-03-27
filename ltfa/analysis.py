@@ -166,7 +166,13 @@ class Analysis():
         # early in the pipeline, which can distort our calculations of the invested
         # amount. Just distributing the gains like this appears to be the only way
         # to get useful EWMH plots out of the data.
-        gains = gains.cumsum().interpolate(method='time').diff()
+        gains_redistributed = gains.cumsum().interpolate().diff()
+
+        # Calling diff() inherently discards the very first value (sets it to
+        # zero), but it's still a gain that needs to be included, so we restore
+        # it manually here:
+        gains_redistributed.iloc[0] = gains.iloc[0]
+        gains = gains_redistributed
 
         # Daily balance of invested money (total on that day)
         self.totalinvest = totalinvest
