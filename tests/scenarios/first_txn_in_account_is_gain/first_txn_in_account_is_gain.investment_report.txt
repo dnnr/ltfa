@@ -1,0 +1,21 @@
+8y ewm:
+	invested     = 1758 €
+	gains p.a.   = 264 €
+	returns p.a. = 15.03%
+4y ewm:
+	invested     = 1827 €
+	gains p.a.   = 196 €
+	returns p.a. = 10.74%
+2y ewm:
+	invested     = 1926 €
+	gains p.a.   = 100 €
+	returns p.a. = 5.19%
+Statistics over all time (3 years):
+	Avg. invested amount: 1677 €
+	Total capital gains: 1030 €
+	Avg. capital gains (p.a.): 343 €
+	Avg. returns (p.a.): 20.45%
+Return rate in 2009: 100.72% (1007 € gains on 1000 € invested)
+Return rate in 2010:   0.63% (13 € gains on 2010 € invested)
+Return rate in 2011:   0.50% (10 € gains on 2020 € invested)
+Return rate past 1y:   0.50% (10 € gains on 2020 € invested)
