@@ -5,7 +5,7 @@
 4y ewm:
 	invested     = 4897 €
 	gains p.a.   = 100 €
-	returns p.a. = 2.03%
+	returns p.a. = 2.04%
 2y ewm:
 	invested     = 4993 €
 	gains p.a.   = 100 €

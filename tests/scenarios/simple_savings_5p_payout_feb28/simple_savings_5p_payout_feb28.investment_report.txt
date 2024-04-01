@@ -8,7 +8,7 @@
 	returns p.a. = 5.00%
 2y ewm:
 	invested     = 1510 €
-	gains p.a.   = 75 €
+	gains p.a.   = 76 €
 	returns p.a. = 5.00%
 Statistics over all time (10 years):
 	Avg. invested amount: 1258 €
