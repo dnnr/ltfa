@@ -40,22 +40,38 @@ class Analysis():
             # No EWM requested, just build the overall average
             mangler = lambda x: x.expanding().mean()
 
-        # Apply mangler (there shouldn't be any NaN values, but fill them with
-        # zero just to be sure):
-        gains = mangler(self.gains.fillna(0))
-        totalinvest = mangler(self.totalinvest.fillna(0))
+        # In the past, we used to "annualize" the gains simply by multiplying
+        # by 365. This is inherently flawed because of leap years and
+        # introduces an error of about 0.05 percent points. Even multiplying by
+        # 365.25 doesn't help unless the span is long enough to average out the
+        # errors (hundreds of years). We tried to do the entire calculation on
+        # discrete years instead of daily data. Handling the beginning and end
+        # is rather hard and more importantly it really only works for year-end
+        # interest payouts. Everything else just gets worse. So, the solution
+        # is to just be more accurate in choosing the factor by applying the
+        # same mangler on the actual number-of-days-in-that-year number.
 
-        # Annualize gains
-        gainspa = gains * 365
+        gains = self.gains
+        totalinvest = self.totalinvest
 
-        # Compute actual return rates (annualized)
-        returns = gainspa.merge(totalinvest, left_index=True, right_index=True)
+        gains['days_in_year'] = gains.index.map(lambda x: 366 if x.is_leap_year else 365)
+
+        gains_pa = mangler(gains.fillna(0))
+        totalinvest = mangler(totalinvest.fillna(0))
+
+        gains.drop('days_in_year', axis=1, inplace=True)
+
+        # Annualize
+        gains_pa['gains'] *= gains_pa['days_in_year']
+
+        # Calculate return rates
+        returns = gains_pa.merge(totalinvest, left_index=True, right_index=True)
         returns['returns'] = returns.gains / returns.totalinvest
 
         return SimpleNamespace(
-                totalinvest=totalinvest,
-                gainspa=gainspa,
-                returns=returns,
+                totalinvest=totalinvest[['totalinvest']],
+                gainspa=gains_pa[['gains']],
+                returns=returns[['returns']],
                 )
 
     def compute_daily_savings(self, accounts):
