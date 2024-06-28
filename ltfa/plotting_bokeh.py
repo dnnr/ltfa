@@ -394,7 +394,7 @@ def add_spending_and_savings_plot(figure, annotations, analysis) -> None:
     figure.line(source=spending_cds, x='date', y='value_ewm_shortterm', color=spending_color, legend_label=f'Monthly spending ({ewm_years_shortterm}y EWM)', line_width=1.3)
     figure.varea(source=spending_cds, x='date', y1=0, y2='value_ewm_shortterm', color=spending_color, legend_label=f'Monthly spending ({ewm_years_shortterm}y EWM)', fill_alpha=0.5)
 
-    figure.line(source=spending_cds, x='date', y='value_ewm_longterm', color=spending_longterm_color, legend_label=f'Estimated monthly spending ({ewm_years_longterm}y EWM)', line_width=1.1)
+    figure.line(source=spending_cds, x='date', y='value_ewm_longterm', color=spending_longterm_color, legend_label=f'Monthly spending ({ewm_years_longterm}y EWM)', line_width=1.1)
     all_plotted_data.append(spending_df.max(axis=1).to_frame(name='value'))
 
     ### Savings
