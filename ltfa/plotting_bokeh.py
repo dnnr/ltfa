@@ -271,11 +271,11 @@ def add_invest_and_gains_plot(figure, accounts, annotations, analysis) -> None:
                                          toggleable=False,
                                          formatters={
                                              '@date': 'datetime',
-                                             '@totalinvest': custom_hovertool_formatter(),
+                                             '@totalinvest_average': custom_hovertool_formatter(),
                                          },
                                          tooltips=[
                                              ('Date', '@date{%F (%a)}'),
-                                             (avg_invested_label, '€ @totalinvest{currency}'),
+                                             (avg_invested_label, '€ @totalinvest_average{currency}'),
                                          ]
                                          ))
 
