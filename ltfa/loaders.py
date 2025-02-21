@@ -1,6 +1,8 @@
 import csv
 import datetime
 import logging
+import pprint
+import sys
 
 from decimal import Decimal
 from operator import attrgetter
@@ -95,7 +97,7 @@ class CsvLoader:
                     fieldmap['balance'] = CsvLoader.make_decimal(fieldmap['balance'], formatcfg)
 
                 if fieldmap['value'] == 0 and not 'balance' in fieldmap:
-                    logging.debug("Ignoring zero-value CSV entry with no balance: {}".format(fieldmap))
+                    logging.debug("Ignoring zero-value CSV entry with no balance: {}".format(pprint.pformat(fieldmap, width=sys.maxsize)))
                     continue
 
                 if not CsvLoader._filters_say_keep(filters, fieldmap):
