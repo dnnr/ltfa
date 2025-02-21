@@ -6,6 +6,7 @@ import dataclasses
 class Transaction:
     value: Decimal
     balance: Decimal
+    balance_only_for_verification: Decimal
     date: str
     subject: str
     peername: str
@@ -21,6 +22,7 @@ class Transaction:
         self.isneutral = None
         self.peeraccount = None
         self.balance = None
+        self.balance_only_for_verification = None
 
         for k, v in kwargs.items():
             self.__setattr__(k, v)

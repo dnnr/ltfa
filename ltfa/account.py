@@ -76,10 +76,19 @@ class Account:
             stillnegative = t.balance < 0
 
     def stage3(self) -> None:
+        any_errors = False
         for txn in self.txns:
             # Any txn still with isneutral==None can now be safely assumed non-neutral.
             if txn.isneutral == None:
                 txn.isneutral = False
+
+            # Validate final balance against ground truth from source
+            if txn.balance_only_for_verification != None and txn.balance_only_for_verification != txn.balance:
+                logging.error(f'{self.name}: Final computed balance ({txn.balance}) does not match ground truth from source ({txn.balance_only_for_verification}): {txn}')
+                any_errors = True
+
+        if any_errors:
+            raise LtfaError(f'{self.name}: Fatal errors in third stage')
 
     def _recompute_balances(self) -> None:
         share_owned = Decimal(self.config.get('share-owned') or 1)
