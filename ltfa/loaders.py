@@ -114,6 +114,7 @@ class CsvLoader:
                     'peeraccount',
                     'peerbic',
                     'balance',
+                    'balance_only_for_verification',
                     'account',
                     ]
                 txn = Transaction(**{k: fieldmap[k] for k in txn_fields if k in fieldmap})
