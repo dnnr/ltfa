@@ -68,6 +68,9 @@ class Account:
         self._autoinfer_txns(accounts)
 
         self._recompute_balances()
+        for t in self.txns:
+            if (t.value != 0):  # A little less noise
+                logging.debug(f'{self.name}: Final recomputed balance on {t.date}: {t.balance} after {t}')
 
         stillnegative = False
         for t in self.txns:
@@ -225,6 +228,7 @@ class Account:
 
         for c in defs:
             filepath = os.path.expanduser(c['file'])
+            logging.debug(f'{self.name}: Loading transactions...')
             txns = CsvLoader.load_txns(filepath, c['format'], c.get('filters') or [])
 
             # Those are usually a lot, don't log them individually:
