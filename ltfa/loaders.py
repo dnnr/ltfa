@@ -30,7 +30,7 @@ class YamlTxnLoader:
 
             spurious = rawtxn.keys() - txnargs.keys()
             if spurious:
-                raise LtfaError("parse_manual_transactions(): Unknown field name(s): {}".format(', '.join(list(spurious))))
+                raise LtfaError("parse_yaml_transactions(): Unknown field name(s): {}".format(', '.join(list(spurious))))
             yield Transaction(**txnargs)
 
 
