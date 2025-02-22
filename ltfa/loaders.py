@@ -19,6 +19,8 @@ class YamlTxnLoader:
         for rawtxn in txns:
             txnargs = {
                 'value': Decimal(rawtxn['value']),
+                'balance_only_for_verification':
+                    Decimal(rawtxn['balance_only_for_verification']) if 'balance_only_for_verification' in rawtxn else None,
                 'date': rawtxn['date'],
                 'subject': rawtxn.get('subject') or '',
                 'isneutral': rawtxn.get('isneutral') or None,
@@ -95,6 +97,10 @@ class CsvLoader:
                 # Parse balance field (if present)
                 if 'balance' in fieldmap:
                     fieldmap['balance'] = CsvLoader.make_decimal(fieldmap['balance'], formatcfg)
+
+                # Parse balance_only_for_verification field (if present)
+                if 'balance_only_for_verification' in fieldmap:
+                    fieldmap['balance_only_for_verification'] = CsvLoader.make_decimal(fieldmap['balance_only_for_verification'], formatcfg)
 
                 if fieldmap['value'] == 0 and not 'balance' in fieldmap:
                     logging.debug("Ignoring zero-value CSV entry with no balance: {}".format(pprint.pformat(fieldmap, width=sys.maxsize)))

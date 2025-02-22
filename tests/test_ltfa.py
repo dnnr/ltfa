@@ -28,6 +28,8 @@ import ltfa.util
         'simple_savings_5p_payout_march31_noleapyears',
         'simple_savings_5p_with_noise',
         'simple_savings_monthly',
+        'balance_verification_failure_yaml_xfail',
+        'balance_verification_failure_csv_xfail',
      ),
 )
 def test_real_data_snapshot(tmpdir, request, scenario):
@@ -49,7 +51,12 @@ def test_real_data_snapshot(tmpdir, request, scenario):
     ])
 
     with testfixtures.LogCapture(level=logging.INFO) as log_capture:
-        ltfa.run(args)
+        try:
+            ltfa.run(args)
+            assert not scenario.endswith('_xfail')
+        except ltfa.util.LtfaError:
+            if not scenario.endswith('_xfail'):
+                raise
 
         # Uncomment to rewrite log snapshot:
         #  with open(scenario_dir / f'{scenario}.log', "w") as fh:
@@ -61,6 +68,9 @@ def test_real_data_snapshot(tmpdir, request, scenario):
             expected_log = [("root", *l.rstrip().split(": ", 1)) for l in fh.readlines()]
 
         log_capture.check(*expected_log)
+
+    if scenario.endswith('_xfail'):
+        return
 
     assert bokeh_html.exists()
 
