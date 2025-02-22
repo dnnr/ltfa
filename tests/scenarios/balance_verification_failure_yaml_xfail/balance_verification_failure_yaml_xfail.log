@@ -1,0 +1,5 @@
+ERROR: SomeCheckingAcc: 2010-01-02: Final computed balance (1045.00) does not match any of the ground truth values ({Decimal('2222'), Decimal('1111')}) of 2 txns on that day. Transactions listed below:
+ERROR: SomeCheckingAcc: Transaction on day (2010-01-02) with balance verification mismatch: Transaction(value=42.0, balance=1044.00, balance_only_for_verification=1111, date=2010-01-02, subject=, peername=, peeraccount=, peerbic=, isneutral=False)
+ERROR: SomeCheckingAcc: Transaction on day (2010-01-02) with balance verification mismatch: Transaction(value=1.0, balance=1045.00, balance_only_for_verification=2222, date=2010-01-02, subject=, peername=, peeraccount=, peerbic=, isneutral=False)
+ERROR: SomeCheckingAcc: 2010-01-04: Final computed balance (1067.00) does not match any of the ground truth values ({Decimal('3333')}) of 1 txns on that day. Transactions listed below:
+ERROR: SomeCheckingAcc: Transaction on day (2010-01-04) with balance verification mismatch: Transaction(value=11.0, balance=1067.00, balance_only_for_verification=3333, date=2010-01-04, subject=, peername=, peeraccount=, peerbic=, isneutral=False)

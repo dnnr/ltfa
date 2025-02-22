@@ -5,7 +5,7 @@ import math
 import os
 import simplejson
 
-from collections import deque
+from collections import deque, defaultdict
 from decimal import Decimal
 from operator import attrgetter
 from operator import itemgetter
@@ -79,19 +79,12 @@ class Account:
             stillnegative = t.balance < 0
 
     def stage3(self) -> None:
-        any_errors = False
         for txn in self.txns:
             # Any txn still with isneutral==None can now be safely assumed non-neutral.
             if txn.isneutral == None:
                 txn.isneutral = False
 
-            # Validate final balance against ground truth from source
-            if txn.balance_only_for_verification != None and txn.balance_only_for_verification != txn.balance:
-                logging.error(f'{self.name}: Final computed balance ({txn.balance}) does not match ground truth from source ({txn.balance_only_for_verification}): {txn}')
-                any_errors = True
-
-        if any_errors:
-            raise LtfaError(f'{self.name}: Fatal errors in third stage')
+        self._validate_balances()
 
     def _recompute_balances(self) -> None:
         share_owned = Decimal(self.config.get('share-owned') or 1)
@@ -120,6 +113,33 @@ class Account:
         for t in self.txns:
             i += t.value
             t.balance = i
+
+    def _validate_balances(self) -> None:
+        # Since we don't retain the original source order of transactions, the
+        # balance might be off for some transactions if there are multiple ones
+        # on the same day. It should be correct for at least one of the
+        # transactions on the same day, so that's what we check here.
+        tmp_txns_per_day = defaultdict(list)
+        for txn in self.txns:
+            tmp_txns_per_day[txn.date].append(txn)
+
+        any_errors = False
+        for date, txns in tmp_txns_per_day.items():
+            final_computed_balance = txns[-1].balance
+            verification_balances = set(t.balance_only_for_verification for t in txns)
+
+            day_has_verification_balances = any(x != None for x in verification_balances)
+            at_least_one_balance_is_correct = final_computed_balance in verification_balances
+
+            if day_has_verification_balances and not at_least_one_balance_is_correct:
+                any_errors = True
+                logging.error(f'{self.name}: {date}: Final computed balance ({final_computed_balance}) does not match any of the ground truth values ({verification_balances}) of {len(txns)} txns on that day. Transactions listed below:')
+                for txn in txns:
+                    logging.error(f'{self.name}: Transaction on day ({txn.date}) with balance verification mismatch: {txn}')
+
+        if any_errors:
+            raise LtfaError(f'{self.name}: Balance verification has failed (see logged errors)')
+
 
     def _insert_txns(self, txns) -> None:
         self.txns.extend(txns)
@@ -220,6 +240,8 @@ class Account:
         for txn in self.txns:
             txn.value *= share
             txn.balance *= share
+            if txn.balance_only_for_verification != None:
+                txn.balance_only_for_verification *= share
 
     def _load_csv_txns(self) -> None:
         defs = self.config.get('from-csv') or []
