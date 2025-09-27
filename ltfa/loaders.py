@@ -64,7 +64,7 @@ class CsvLoader:
             if has_header:
                 header = list(csv.reader(csvfile, dialect))[0]
                 csvfile.seek(0)
-                colmap = dict(reversed(x) for x in enumerate(header))
+                colmap = {col: idx for idx, col in enumerate(header)}
             else:
 
                 class IdentDict(dict):
