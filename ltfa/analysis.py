@@ -93,7 +93,7 @@ class Analysis():
         for matcher in salary_matchers:
             # Skip empty matchers
             if matcher == {}:
-                next
+                continue
 
             # Accumulate matcher conditions with logical AND, starting with an
             # all-true mask:
