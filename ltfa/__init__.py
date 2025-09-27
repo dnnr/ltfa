@@ -68,8 +68,8 @@ def run(args) -> None:
         else:
             logging.warning("{}: Got no transactions at all".format(a.name))
 
-    accounts = accounts_to_dataframes(accounts)
-    analysis = Analysis(accounts, salary_matchers)
+    accounts_df = accounts_to_dataframes(accounts)
+    analysis = Analysis(accounts_df, salary_matchers)
 
     if args.investment_report and analysis.has_capgains:
         with file_or_stdout(args.investment_report) as fh:
@@ -83,7 +83,7 @@ def run(args) -> None:
             analysis.make_monthly_overview(fh, args.month_for_overview)
 
     if args.bokeh:
-        plotting_bokeh.make(accounts, annotations, analysis, args.bokeh)
+        plotting_bokeh.make(accounts_df, annotations, analysis, args.bokeh)
 
 
 def parse_args(args) -> argparse.Namespace:
