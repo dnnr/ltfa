@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 import pandas as pd
 import re
 import functools
-from typing import Optional
+from typing import Optional, cast, Any
 from operator import attrgetter
 from collections import defaultdict
 
@@ -30,6 +30,7 @@ class Analysis():
 
     def debug_log_salary(self):
         for txn in self.txns[self.txns.salary][['value', 'subject', 'peername', 'account']].itertuples(name='Salary'):
+            txn = cast(Any, txn)  # makes pyright shut up about it
             txn = txn._replace(Index = str(txn.Index.date()))
             logging.debug(txn)
 
