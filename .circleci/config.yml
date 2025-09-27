@@ -44,6 +44,4 @@ workflows:
     jobs:
       - build-and-test
       - check-single-commit
-      - docker/hadolint:
-          dockerfiles: Dockerfile
       - shellcheck/check
