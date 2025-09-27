@@ -418,7 +418,7 @@ class Account:
     # TODO: Clean up mixed use of dicts and SimpleNamespace in balances and
     # checkpoints before adding type hints to this function!
     def _insert_balance_checkpoints(self):
-        balances = self._collect_balance_checkpoints()
+        balances_raw = self._collect_balance_checkpoints()
 
         """
         Get it right, kids:
@@ -445,7 +445,8 @@ class Account:
         """
 
         # Transform balance objects from configuration:
-        for i, b in enumerate(balances):
+        balances = []
+        for b in balances_raw:
             # By default, interpolation is disabled. This is because it has the
             # potential to greatly distort the calculation of capital
             # gains and returns (by influencing the assumed invested amount).
@@ -454,12 +455,12 @@ class Account:
             if interpolate is True:
                 # -1 means heuristic
                 interpolate = -1
-            balances[i] = SimpleNamespace(
+            balances.append(SimpleNamespace(
                     date=b['date'],
                     balance=Decimal(b['balance']),
                     interpolate=interpolate,
                     remark=b.get('remark') or '',
-                    )
+                    ))
 
         self._insert_balance_interpolation_points(balances)
 
