@@ -15,7 +15,7 @@ class Transaction:
     account: str
     # Indicates if txn is just between own accounts (i.e., doesn't
     # reflect a change in wealth)
-    isneutral: bool
+    isneutral: bool | None
 
     def __init__(self, **kwargs):
         # Some defaults:
