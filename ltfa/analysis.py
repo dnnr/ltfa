@@ -241,6 +241,7 @@ class Analysis():
                                                               left_index=True, right_index=True)
         longest_return_rate_string = max(len("{:.2%}".format(item['gains'] / item['totalinvest'])) for _, item in yearlyreturns.iterrows())
         for date, item in yearlyreturns.iterrows():
+            date = cast(pd.Timestamp, date)
             if date > pd.Timestamp(self.capgains_endoftime):
                 # Skip current year if it hasn't concluded yet (see stats for past
                 # year instead)
