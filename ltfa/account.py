@@ -259,7 +259,7 @@ class Account:
             self._insert_txns(txns)
 
     @staticmethod
-    def _txndateslice(txns, fromdate, todate=None) -> None:
+    def _txndateslice(txns, fromdate, todate=None) -> list[Transaction]:
         """ Helper to select a subset of a transaction list based on
         date limits. The one, last transaction to come before the
         given lower limit is always included, too. """
