@@ -30,6 +30,7 @@ import ltfa.util
         'simple_savings_monthly',
         'balance_verification_failure_yaml_xfail',
         'balance_verification_failure_csv_xfail',
+        'no_gains_at_all',
      ),
 )
 def test_real_data_snapshot(tmpdir, request, scenario):
