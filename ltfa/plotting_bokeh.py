@@ -192,7 +192,7 @@ def add_balances_plot(figure, accounts, accounts_stacked, annotations, analysis)
     # otherwise multiple tooltips will be rendered and overlap. The distinction
     # between balance and txn tooltips has to happen within the tooltip.
     figure.add_tools(bk.models.HoverTool(renderers=marker_glyphs,
-                                         toggleable=False,
+                                         visible=False,
                                          formatters={
                                              '@date': 'datetime',
                                              '@balance': custom_hovertool_formatter(),
@@ -231,7 +231,7 @@ def add_annotations(figure, annotations, guideline, y_offset_factor=0.05, color=
     annotations_glyph = figure.inverted_triangle(source=annotations, x='index', y='value', color=color, fill_alpha=fill_alpha, size=20, **maybe_legend_label)
 
     figure.add_tools(bk.models.HoverTool(renderers=[annotations_glyph],
-                                         toggleable=False,
+                                         visible=False,
                                          formatters={
                                              '@index': 'datetime',
                                          },
@@ -256,7 +256,7 @@ def add_invest_and_gains_plot(figure, accounts, annotations, analysis) -> None:
     gains_glyph = figure.line(source=cds, x='date', y='gains_cumsum', legend_label=gains_label, line_width=1.3, color='green')
 
     figure.add_tools(bk.models.HoverTool(renderers=[invested_glyph],
-                                         toggleable=False,
+                                         visible=False,
                                          formatters={
                                              '@date': 'datetime',
                                              '@totalinvest': custom_hovertool_formatter(),
@@ -268,7 +268,7 @@ def add_invest_and_gains_plot(figure, accounts, annotations, analysis) -> None:
                                          ))
 
     figure.add_tools(bk.models.HoverTool(renderers=[avg_invested_glyph],
-                                         toggleable=False,
+                                         visible=False,
                                          formatters={
                                              '@date': 'datetime',
                                              '@totalinvest_average': custom_hovertool_formatter(),
@@ -280,7 +280,7 @@ def add_invest_and_gains_plot(figure, accounts, annotations, analysis) -> None:
                                          ))
 
     figure.add_tools(bk.models.HoverTool(renderers=[gains_glyph],
-                                         toggleable=False,
+                                         visible=False,
                                          formatters={
                                              '@date': 'datetime',
                                              '@gains_cumsum': custom_hovertool_formatter(),
@@ -300,7 +300,7 @@ def add_capital_returns_plot(figure, accounts, annotations, analysis) -> None:
 
         if with_hover:
             figure.add_tools(bk.models.HoverTool(renderers=[returns_glyph],
-                                                 toggleable=False,
+                                                 visible=False,
                                                  mode='vline',
                                                  formatters={
                                                      '@date': 'datetime',
