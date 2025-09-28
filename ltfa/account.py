@@ -19,14 +19,17 @@ from ltfa.util import LtfaError
 
 
 class Account:
+    instance_counter = 0
     def __init__(self, config) -> None:
+        Account.instance_counter += 1
+        self.instance_counter = Account.instance_counter
         self.name = config['name']
         self.config = config
         self.txns: list[Transaction] = []
         self.initial_balance: Optional[Decimal] = None
 
     def __repr__(self) -> str:
-        return f"<Account at 0x{id(self):x}, name={self.name}, {len(self.txns)} txns>"
+        return f"<Account 0x{self.instance_counter:x}, name={self.name}, {len(self.txns)} txns>"
 
     def stage1(self) -> None:
         if 'asset-type' not in self.config:
