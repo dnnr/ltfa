@@ -12,8 +12,11 @@ import ltfa.util
 @pytest.mark.parametrize(
     'scenario',
     (
+        'balance_verification_failure_csv_xfail',
+        'balance_verification_failure_yaml_xfail',
         'first_txn_in_account_is_gain',
         'first_txn_overall_is_gain',
+        'no_gains_at_all',
         'savings_negative_gains',
         'savings_varying_interest',
         'shared_ownership',
@@ -28,9 +31,6 @@ import ltfa.util
         'simple_savings_5p_payout_march31_noleapyears',
         'simple_savings_5p_with_noise',
         'simple_savings_monthly',
-        'balance_verification_failure_yaml_xfail',
-        'balance_verification_failure_csv_xfail',
-        'no_gains_at_all',
      ),
 )
 def test_real_data_snapshot(tmpdir, request, scenario):
