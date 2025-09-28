@@ -428,12 +428,12 @@ def calc_spending_and_salary_ewms(analysis, ewm_years):
     salary = salary[salary.index < datetime.date.today().strftime('%Y-%m')]
 
     # Compute plain monthly sum to just plot as-is
-    salary_monthly_sum = salary.resample('1M').sum()
+    salary_monthly_sum = salary.resample('1ME').sum()
 
-    # Compute EWM of salary, but using a 1M resampling because salary really
+    # Compute EWM of salary, but using a monthly resampling because salary really
     # has a known monthly cadence, and otherwise, we'd just see a saw tooth
     # pattern but no additional information:
-    salary_ewm = salary.resample('1M').sum().fillna(0).ewm(span=ewm_years * 365 / 30.4).mean()
+    salary_ewm = salary.resample('1ME').sum().fillna(0).ewm(span=ewm_years * 365 / 30.4).mean()
 
     return savings_ewm, salary_ewm, salary_monthly_sum
 
