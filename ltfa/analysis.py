@@ -235,9 +235,8 @@ class Analysis():
         # at the actual avg. invested amount.
         p("\tAvg. returns (p.a.): {:.2%}".format(overall.returns.returns.iloc[-1]))
 
-
-        # Discrete, cumulated stats for each calendar year ('A' means year-end):
-        yearlyreturns = self.gains.resample('A').sum().merge(self.totalinvest.resample('A').mean(),
+        # Discrete, cumulated stats for each calendar year ('YE' means year-end):
+        yearlyreturns = self.gains.resample('YE').sum().merge(self.totalinvest.resample('YE').mean(),
                                                               left_index=True, right_index=True)
         longest_return_rate_string = max(len("{:.2%}".format(item['gains'] / item['totalinvest'])) for _, item in yearlyreturns.iterrows())
         for date, item in yearlyreturns.iterrows():
