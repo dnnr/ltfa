@@ -145,7 +145,7 @@ def add_balances_plot(figure, accounts, accounts_stacked, annotations, analysis)
         # TODO: We should draw them in a single call for all accounts to avoid
         # remaining overlapping artifacts in tooltips (likely to happen when an
         # account goes to zero)
-        marker_glyphs += [figure.circle(source=balances_and_txns, x='date', y='top', color=lighterer_color, line_color=lighter_color, fill_alpha='marker_alpha', line_alpha='marker_alpha', size=8, legend_label=account.meta.name)]
+        marker_glyphs += [figure.scatter(source=balances_and_txns, x='date', y='top', color=lighterer_color, line_color=lighter_color, fill_alpha='marker_alpha', line_alpha='marker_alpha', size=8, legend_label=account.meta.name)]
 
         # Draw lines and areas only for regions where the account has non-zero
         # value (but use expand_mask so that the first and last zero-value
@@ -378,7 +378,7 @@ def add_spending_and_savings_plot(figure, annotations, analysis) -> None:
     salary_cds = bk.models.ColumnDataSource(salary_df)
 
     figure.line(source=salary_cds, x='date', y='monthly_sum', legend_label='Actual salary per month', color=salary_color, line_width=1.3)
-    figure.circle(source=salary_cds, x='date', y='monthly_sum', size=6, color=salary_color, legend_label='Actual salary per month', fill_alpha=0)
+    figure.scatter(source=salary_cds, x='date', y='monthly_sum', size=6, color=salary_color, legend_label='Actual salary per month', fill_alpha=0)
 
     figure.line(source=salary_cds, x='date', y='ewm', legend_label=f'Salary ({ewm_years_midterm}y EWM)', color=salary_color, line_width=2)
     all_plotted_data.append(salary_df.max(axis=1).to_frame(name='value'))
