@@ -228,7 +228,7 @@ def add_annotations(figure, annotations, guideline, y_offset_factor=0.05, color=
     annotations = annotations.join(guideline, how='left')
 
     maybe_legend_label = {'legend_label': legend_label} if legend_label else {}
-    annotations_glyph = figure.inverted_triangle(source=annotations, x='index', y='value', color=color, fill_alpha=fill_alpha, size=20, **maybe_legend_label)
+    annotations_glyph = figure.scatter(source=annotations, x='index', y='value', marker='inverted_triangle', color=color, fill_alpha=fill_alpha, size=20, **maybe_legend_label)
 
     figure.add_tools(bk.models.HoverTool(renderers=[annotations_glyph],
                                          visible=False,
