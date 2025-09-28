@@ -62,7 +62,7 @@ def stack_dataframes(accounts_df) -> list[pd.DataFrame]:
 
         # Fill NaNs in "bottom" (i.e., all dates that are new to the stack now)
         # by padding the previous value
-        account_df.dailies.bottom.ffill(inplace=True)
+        account_df.dailies.bottom = account_df.dailies.bottom.ffill()
 
         # Compute new "top" by adding the cumsum of new transactions to the bottom values
         #  account_df.dailies['top'] = (prev_account.dailies.value + account_df.dailies.value).cumsum()
