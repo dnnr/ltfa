@@ -125,6 +125,8 @@ def accounts_to_dataframes(accounts) -> list[pd.DataFrame]:
     # First determine the time bounds of all data, so that every dataframe can
     # cover the full range
     alldates = [t.date for t in itertools.chain(*[a.txns for a in accounts])]
+    if len(alldates) == 0:
+        raise LtfaError('No accounts contain any transactions. I cannot work like this.')
     beginningoftime = min(alldates)
     endoftime = max(alldates)
 
