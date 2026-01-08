@@ -152,7 +152,11 @@ def add_balances_plot(figure, accounts, accounts_stacked, annotations, analysis)
         # entries are included, otherwise we'll get weird drawing artifacts)
         relevant_values_mask = (dailies.bottom != dailies.top).rolling(window=3, min_periods=2, center=True).max().astype(bool)
         dailies = dailies.where(relevant_values_mask)
+
+        # Keep only columns used for drawing:
         dailies = dailies[['top', 'bottom']]
+
+        # Prepare shared CDS for line and area:
         dailies_cds = bk.models.ColumnDataSource(dailies)
 
         figure.varea_step(source=dailies_cds, x='date', y1='bottom', y2='top', step_mode='after', color=this_color, fill_alpha=0.2, legend_label=account.meta.name)
