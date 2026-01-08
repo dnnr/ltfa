@@ -9,6 +9,7 @@ import logging
 import datetime
 from types import SimpleNamespace
 from typing import Generator
+from ltfa.util import LtfaError
 
 
 def color_gen() -> Generator:
@@ -19,15 +20,16 @@ def custom_hovertool_formatter() -> bk.models.tools.CustomJSHover:
     """ Universal formatting helper that covers the various representation
     needs of the tooltips. """
     return bk.models.tools.CustomJSHover(code="""
-        if (format == "display_none_if_nan") {
-            return isNaN(value) ? "display:none;" : ""
+        if (format == "display_none_if_true") {
+            return value ? "display:none" : ""
+        } else if (format == "display_none_if_false") {
+            return value ? "" : "display:none"
+        } else if (format == "display_table_if_false") {
+            return value ? "" : "display:table"
         } else if (format == "sign_color") {
-            if (value < 0) {
-                return "color: red;"
-            } else if (value > 0) {
-                return "color: green;"
-            }
-            return ""
+            return value < 0 ? "red" : "green"
+        } else if (format == "sign_arrow") {
+            return value < 0 ? "⮕" : "⬅"
         } else if (format == "currency") {
             return value.toLocaleString("en-US", {"minimumFractionDigits": 2, "maximumFractionDigits": 3})
         } else if (format != "" && !isNaN(value)) {
@@ -83,11 +85,14 @@ def stack_dataframes(accounts_df) -> list[pd.DataFrame]:
 
 
 def add_balances_plot(figure, custom_js_hover, accounts, accounts_stacked, annotations, analysis) -> None:
-    marker_glyphs = []
     colors = color_gen()
 
     all_dailies_map = {}
     line_color_map = {}
+    all_balances_and_txns = []
+
+    markers_fill_color_map = {}
+    markers_line_color_map = {}
 
     for idx, account in enumerate(accounts_stacked):
         # Also compute a lighter color for the tooltip circles so that the line
@@ -132,25 +137,34 @@ def add_balances_plot(figure, custom_js_hover, accounts, accounts_stacked, annot
 
         balances_and_txns['account'] = account.meta.name
 
-        # Prepare a marker alpha column that is non-zero for every first row
-        # per day and zero for the rest, so that only one marker (circle) is
-        # visible per day, but all of them contribute to the tooltip content:
-        # TODO: Maybe merge the tooltip content beforehand instead?
-        # Note: float32 actually serializes more compact than float16!
-        balances_and_txns['marker_alpha'] = np.array([0 if isdup else 0.7 for isdup in balances_and_txns.index.duplicated()], dtype=np.float32)
-
         # Storing NaNs in the generated JSON is surprisingly costly (~34
-        # bytes), so we're replacing them with an appropriate fallback strings:
+        # bytes), so we're replacing them with empty strings:
         balances_and_txns.fillna({
-            'peername': 'n/a',
-            'subject': 'n/a',
+            'peername': '',
+            'subject': '',
         }, inplace=True)
 
-        # Finally draw the markers
-        # TODO: We should draw them in a single call for all accounts to avoid
-        # remaining overlapping artifacts in tooltips (likely to happen when an
-        # account goes to zero)
-        marker_glyphs += [figure.scatter(source=balances_and_txns, x='date', y='top', color=lighterer_color, line_color=lighter_color, fill_alpha='marker_alpha', line_alpha='marker_alpha', size=8)]
+        markers_fill_color_map[account.meta.name] = lighterer_color
+        markers_line_color_map[account.meta.name] = lighter_color
+        balances_and_txns['account'] = account.meta.name
+
+        # Convert separate balance and value columns into single numeric value and a bool. We need
+        # to do it like this because HoverTool doesn't work well with NaN values (it doesn't call
+        # the custom JS at all). Note that for the tooltip visuals it's important that the first row
+        # of each day is the balance row. This happens to be the case.
+        if not all(balances_and_txns['value'].notna() ^ balances_and_txns['balance'].notna()):
+            rows_in_violation = balances_and_txns[~(balances_and_txns['value'].notna() ^ balances_and_txns['balance'].notna())]
+            raise LtfaError("Sanity check failed: Either value or balance must be non-NaN a value, not both! Rows in violation:\n" + str(rows_in_violation))
+        balances_and_txns['value_or_balance'] = balances_and_txns['value'].fillna(0) + balances_and_txns['balance'].fillna(0)
+        balances_and_txns['is_balance'] = balances_and_txns['balance'].notna()
+        balances_and_txns.drop(['value', 'balance'], axis=1, inplace=True)
+
+        def truncate(limit):
+            return lambda s: s if len(s) <= limit else s[:limit] + '…'
+        balances_and_txns['subject'] = balances_and_txns.subject.apply(truncate(40))
+        balances_and_txns['peername'] = balances_and_txns.peername.apply(truncate(60))
+
+        all_balances_and_txns.append(balances_and_txns)
 
         # Draw lines and areas only for regions where the account has non-zero
         # value (but use expand_mask so that the first and last zero-value
@@ -163,6 +177,12 @@ def add_balances_plot(figure, custom_js_hover, accounts, accounts_stacked, annot
 
         all_dailies_map[idx] = dailies
         line_color_map[idx] = this_color
+
+    # First draw the markers so that the lines drawn afterwards are more clearly visible on top of them
+    tooltip_datas_concat = pd.concat(all_balances_and_txns)
+    cmap_fill_color = bk.transform.factor_cmap('account', palette=list(markers_fill_color_map.values()), factors=list(markers_fill_color_map.keys()))
+    cmap_line_color = bk.transform.factor_cmap('account', palette=list(markers_line_color_map.values()), factors=list(markers_line_color_map.keys()))
+    marker_glyphs = [figure.scatter(source=bk.models.ColumnDataSource(tooltip_datas_concat), x='date', y='top', color=cmap_fill_color, line_color=cmap_line_color, fill_alpha=0.7, line_alpha=0.7, size=8)]
 
     # Prepare data for CDSView: Merge all dailies into a single DF, with a column holding the
     # account index (= dict key):
@@ -177,33 +197,26 @@ def add_balances_plot(figure, custom_js_hover, accounts, accounts_stacked, annot
         figure.varea_step(source=all_dailies_cds, view=view, x='date', y1='bottom', y2='top', step_mode='after', color=color, fill_alpha=0.2)
         figure.step(source=all_dailies_cds, view=view, x='date', y='top', mode='after', color=color, line_width=1)
 
-    # The tooltips are a bit hacky: We draw the same one for every marker
-    # (balances and every transaction), but use custom formatter to hide the
-    # parts that are not relevant.
-    # Note that unlike in the stock tooltips, we cannot use real CSS tables here
-    # because bokeh insists on wrapping each tooltip in two DIVs when
-    # concatenating overlapping onces, which prohibits the use of an actual
-    # table. An alternative would be to put all transactions into one row, but
-    # that would mean parsing it (as JSON?) in the formatter. I'd rather not.
-    # Also note that we rely on custom global CSS here (see the save() call at
-    # the end).
+    # The tooltips are a bit hacky: We draw the same one for every marker (balances and every
+    # transaction), but use custom formatter to hide the parts that are not applicable.
+    # Note that unlike in the stock tooltips, we cannot use a single tables for the whole tooltip
+    # because bokeh insists on wrapping each tooltip in two DIVs when concatenating overlapping
+    # onces, which prohibits the use of an actual table. An alternative would be to put all
+    # transactions into one row, but that would mean parsing it (as JSON?) in the formatter. I'd
+    # rather not. Also note that we rely on custom global CSS here (see the save() call at the end).
     TOOLTIPS = """
-        <div class="bk-tooltip-date" style="@balance{display_none_if_nan}">
-            <span class="bk bk-tooltip-row-label" style=" font-weight: bold;">Date: </span>
-            <span class="bk bk-tooltip-row-value" style="">
-                <span class="bk">@date{%F (%a)}</span>
-            </span>
+        <div style="@is_balance{display_none_if_false}">
+            <span style="color: #26aae1"><b>@date{%F (%a)}: </b></span>
+            <b>@account</b> (€ @value_or_balance{currency})
         </div>
-        <div style="@balance{display_none_if_nan}">
-            <span class="bk bk-tooltip-row-label" style=" font-weight: bold;">Balance: </span>
-            <span class="bk bk-tooltip-row-value" style="">
-                <span class="bk">€ @balance{currency} (@account)</span>
-            </span>
-        </div>
-        <div class="bk-tooltip-txn" style="@value{display_none_if_nan}">
-            <span class="bk bk-tooltip-row-value" style="display: table-cell;">
-                <span style="@value{sign_color}">€ @value{currency}</span> @peername (@subject)
-            </span>
+        <div style="@is_balance{display_none_if_true}@is_balance{display_table_if_false}">
+            <div style="display:table-row">
+                <div style="display:table-cell">
+                    <span style="color:@value_or_balance{sign_color}">€ @value_or_balance{currency}</span>
+                </div>
+                <div style="display:table-cell;padding: 0 1ex 0 1ex">@value_or_balance{sign_arrow}</div>
+                <div style="display:table-cell"><div>@peername</div><div><i>@subject</i></div>
+            </div>
         </div>
     """
 
@@ -214,8 +227,8 @@ def add_balances_plot(figure, custom_js_hover, accounts, accounts_stacked, annot
                                          visible=False,
                                          formatters={
                                              '@date': 'datetime',
-                                             '@balance': custom_js_hover,
-                                             '@value': custom_js_hover,
+                                             '@is_balance': custom_js_hover,
+                                             '@value_or_balance': custom_js_hover,
                                          },
                                          tooltips=TOOLTIPS,
                                          ))
