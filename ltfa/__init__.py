@@ -151,7 +151,7 @@ def accounts_to_dataframes(accounts) -> list[pd.DataFrame]:
             startat + [(
                 txn.date,
                 float(txn.value),
-                getattr(txn, 'peername', 'n/a'),
+                getattr(txn, 'peername', ''),
                 txn.peeraccount,
                 txn.subject,
                 txn.isneutral,
