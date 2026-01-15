@@ -85,7 +85,12 @@ def stack_dataframes(accounts_df) -> list[pd.DataFrame]:
 def add_balances_plot(figure, custom_js_hover, accounts, accounts_stacked, annotations, analysis) -> None:
     marker_glyphs = []
     colors = color_gen()
-    for account in accounts_stacked:
+
+    all_dailies_map = {}
+    line_color_map = {}
+    legend_label_map = {}
+
+    for idx, account in enumerate(accounts_stacked):
         # Also compute a lighter color for the tooltip circles so that the line
         # itself (drawn on top) remains visible even if there are many
         # overlapping circles.
@@ -157,11 +162,23 @@ def add_balances_plot(figure, custom_js_hover, accounts, accounts_stacked, annot
         # Keep only columns used for drawing:
         dailies = dailies[['top', 'bottom']]
 
-        # Prepare shared CDS for line and area:
-        dailies_cds = bk.models.ColumnDataSource(dailies)
+        all_dailies_map[idx] = dailies
+        line_color_map[idx] = this_color
+        legend_label_map[idx] = account.meta.name
 
-        figure.varea_step(source=dailies_cds, x='date', y1='bottom', y2='top', step_mode='after', color=this_color, fill_alpha=0.2, legend_label=account.meta.name)
-        figure.step(source=dailies_cds, x='date', y='top', mode='after', color=this_color, line_width=1, legend_label=account.meta.name)
+    # Prepare data for CDSView: Merge all dailies into a single DF, with a column holding the
+    # account index (= dict key):
+    all_dailies_df = pd.concat(all_dailies_map, names=["account_idx"]).reset_index(level=0)
+    all_dailies_cds = bk.models.ColumnDataSource(all_dailies_df)
+
+    # There's a size benefit in using a single CDS for all accounts but we still need to draw
+    # one-by-one because there is nothing like MultiLine for Step/VAreaStep:
+    for name in all_dailies_map.keys():
+        view = bk.models.CDSView(filter=bk.models.GroupFilter(column_name="account_idx", group=name))
+        color = line_color_map[name]
+        legend_label = legend_label_map[name]
+        figure.varea_step(source=all_dailies_cds, view=view, x='date', y1='bottom', y2='top', step_mode='after', color=color, fill_alpha=0.2, legend_label=legend_label)
+        figure.step(source=all_dailies_cds, view=view, x='date', y='top', mode='after', color=color, line_width=1, legend_label=legend_label)
 
     # The tooltips are a bit hacky: We draw the same one for every marker
     # (balances and every transaction), but use custom formatter to hide the
