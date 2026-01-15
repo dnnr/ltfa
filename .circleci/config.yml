@@ -21,6 +21,22 @@ jobs:
           name: Run tests
           command: pipenv run pytest
 
+      - python/install-packages:
+          args: github-pages-publish~=0.1
+          pkg-manager: pip
+      - run:
+          name: Build demo
+          command: |
+            mkdir /tmp/demo
+            ./ltfa.py --config=demo/demo.conf -o /tmp/demo
+            github-pages-publish -h
+            git config user.email "circleci@example.com"
+            git config user.name "CircleCI"
+            github-pages-publish --verbose -c dnnr.github.io . /tmp/demo
+            #git push origin gh-pages:gh-pages
+            git push -q https://${GITHUB_PERSONAL_TOKEN}@github.com/dnnr/ltfa.git gh-pages:gh-pages
+
+
   check-single-commit:
     docker:
       - image: cimg/base:stable
