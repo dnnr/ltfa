@@ -10,6 +10,7 @@ import datetime
 from types import SimpleNamespace
 from typing import Generator
 
+
 def color_gen() -> Generator:
     yield from itertools.cycle(bk.palettes.Category10[10])
 
@@ -18,23 +19,23 @@ def custom_hovertool_formatter() -> bk.models.tools.CustomJSHover:
     """ Universal formatting helper that covers the various representation
     needs of the tooltips. """
     return bk.models.tools.CustomJSHover(code="""
-            if (format == "display_none_if_nan") {
-                return isNaN(value) ? "display:none;" : ""
-            } else if (format == "sign_color") {
-                if (value < 0) {
-                    return "color: red;"
-                } else if (value > 0) {
-                    return "color: green;"
-                }
-                return ""
-            } else if (format == "currency") {
-                return value.toLocaleString("en-US", {"minimumFractionDigits": 2, "maximumFractionDigits": 3})
-            } else if (format != "" && !isNaN(value)) {
-                return sprintf(format, value)
-            } else {
-                return value
+        if (format == "display_none_if_nan") {
+            return isNaN(value) ? "display:none;" : ""
+        } else if (format == "sign_color") {
+            if (value < 0) {
+                return "color: red;"
+            } else if (value > 0) {
+                return "color: green;"
             }
-        """)
+            return ""
+        } else if (format == "currency") {
+            return value.toLocaleString("en-US", {"minimumFractionDigits": 2, "maximumFractionDigits": 3})
+        } else if (format != "" && !isNaN(value)) {
+            return sprintf(format, value)
+        } else {
+            return value
+        }
+    """)
 
 
 def stack_dataframes(accounts_df) -> list[pd.DataFrame]:
@@ -81,7 +82,7 @@ def stack_dataframes(accounts_df) -> list[pd.DataFrame]:
     return ret
 
 
-def add_balances_plot(figure, accounts, accounts_stacked, annotations, analysis) -> None:
+def add_balances_plot(figure, custom_js_hover, accounts, accounts_stacked, annotations, analysis) -> None:
     marker_glyphs = []
     colors = color_gen()
     for account in accounts_stacked:
@@ -199,8 +200,8 @@ def add_balances_plot(figure, accounts, accounts_stacked, annotations, analysis)
                                          visible=False,
                                          formatters={
                                              '@date': 'datetime',
-                                             '@balance': custom_hovertool_formatter(),
-                                             '@value': custom_hovertool_formatter(),
+                                             '@balance': custom_js_hover,
+                                             '@value': custom_js_hover,
                                          },
                                          tooltips=TOOLTIPS,
                                          ))
@@ -245,7 +246,7 @@ def add_annotations(figure, annotations, guideline, y_offset_factor=0.05, color=
                                          ]
                                          ))
 
-def add_invest_and_gains_plot(figure, accounts, annotations, analysis) -> None:
+def add_invest_and_gains_plot(figure, custom_js_hover, accounts, annotations, analysis) -> None:
     invested_label = 'Invested amount (currently)'
     avg_invested_label = 'Invested amount (all-time average)'
     gains_label = 'Capital gains (cumulative)'
@@ -263,7 +264,7 @@ def add_invest_and_gains_plot(figure, accounts, annotations, analysis) -> None:
                                          visible=False,
                                          formatters={
                                              '@date': 'datetime',
-                                             '@totalinvest': custom_hovertool_formatter(),
+                                             '@totalinvest': custom_js_hover,
                                          },
                                          tooltips=[
                                              ('Date', '@date{%F (%a)}'),
@@ -275,7 +276,7 @@ def add_invest_and_gains_plot(figure, accounts, annotations, analysis) -> None:
                                          visible=False,
                                          formatters={
                                              '@date': 'datetime',
-                                             '@totalinvest_average': custom_hovertool_formatter(),
+                                             '@totalinvest_average': custom_js_hover,
                                          },
                                          tooltips=[
                                              ('Date', '@date{%F (%a)}'),
@@ -287,7 +288,7 @@ def add_invest_and_gains_plot(figure, accounts, annotations, analysis) -> None:
                                          visible=False,
                                          formatters={
                                              '@date': 'datetime',
-                                             '@gains_cumsum': custom_hovertool_formatter(),
+                                             '@gains_cumsum': custom_js_hover,
                                          },
                                          tooltips=[
                                              ('Date', '@date{%F (%a)}'),
@@ -477,11 +478,12 @@ def make(accounts, annotations, analysis, file) -> None:
     # stack_dataframes() has side-effects on the input, so we can only do it once
     accounts_stacked = stack_dataframes(accounts)
 
-    add_balances_plot(figure1, accounts, accounts_stacked, annotations, analysis)
+    custom_js_hover = custom_hovertool_formatter()
+    add_balances_plot(figure1, custom_js_hover, accounts, accounts_stacked, annotations, analysis)
     figures_to_plot = [figure1]
 
     if analysis.has_capgains:
-        add_invest_and_gains_plot(figure1, accounts, annotations, analysis)
+        add_invest_and_gains_plot(figure1, custom_js_hover, accounts, annotations, analysis)
         add_capital_returns_plot(figure2, accounts, annotations, analysis)
         figures_to_plot += [figure2]
 
