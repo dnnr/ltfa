@@ -88,7 +88,6 @@ def add_balances_plot(figure, custom_js_hover, accounts, accounts_stacked, annot
 
     all_dailies_map = {}
     line_color_map = {}
-    legend_label_map = {}
 
     for idx, account in enumerate(accounts_stacked):
         # Also compute a lighter color for the tooltip circles so that the line
@@ -151,7 +150,7 @@ def add_balances_plot(figure, custom_js_hover, accounts, accounts_stacked, annot
         # TODO: We should draw them in a single call for all accounts to avoid
         # remaining overlapping artifacts in tooltips (likely to happen when an
         # account goes to zero)
-        marker_glyphs += [figure.scatter(source=balances_and_txns, x='date', y='top', color=lighterer_color, line_color=lighter_color, fill_alpha='marker_alpha', line_alpha='marker_alpha', size=8, legend_label=account.meta.name)]
+        marker_glyphs += [figure.scatter(source=balances_and_txns, x='date', y='top', color=lighterer_color, line_color=lighter_color, fill_alpha='marker_alpha', line_alpha='marker_alpha', size=8)]
 
         # Draw lines and areas only for regions where the account has non-zero
         # value (but use expand_mask so that the first and last zero-value
@@ -164,7 +163,6 @@ def add_balances_plot(figure, custom_js_hover, accounts, accounts_stacked, annot
 
         all_dailies_map[idx] = dailies
         line_color_map[idx] = this_color
-        legend_label_map[idx] = account.meta.name
 
     # Prepare data for CDSView: Merge all dailies into a single DF, with a column holding the
     # account index (= dict key):
@@ -176,9 +174,8 @@ def add_balances_plot(figure, custom_js_hover, accounts, accounts_stacked, annot
     for name in all_dailies_map.keys():
         view = bk.models.CDSView(filter=bk.models.GroupFilter(column_name="account_idx", group=name))
         color = line_color_map[name]
-        legend_label = legend_label_map[name]
-        figure.varea_step(source=all_dailies_cds, view=view, x='date', y1='bottom', y2='top', step_mode='after', color=color, fill_alpha=0.2, legend_label=legend_label)
-        figure.step(source=all_dailies_cds, view=view, x='date', y='top', mode='after', color=color, line_width=1, legend_label=legend_label)
+        figure.varea_step(source=all_dailies_cds, view=view, x='date', y1='bottom', y2='top', step_mode='after', color=color, fill_alpha=0.2)
+        figure.step(source=all_dailies_cds, view=view, x='date', y='top', mode='after', color=color, line_width=1)
 
     # The tooltips are a bit hacky: We draw the same one for every marker
     # (balances and every transaction), but use custom formatter to hide the
