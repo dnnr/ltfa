@@ -47,7 +47,7 @@ class CsvLoader:
         return Decimal(s)
 
     @staticmethod
-    def load_txns(filepath, formatcfg, filters=[]):
+    def load_txns(filepath, formatcfg, account_name: str, filters=[]):
         with open(filepath, 'r', errors='replace') as csvfile:
             delimiter = formatcfg.get('delimiter') or None
 
@@ -106,7 +106,7 @@ class CsvLoader:
                     logging.debug("Ignoring zero-value CSV entry with no balance: {}".format(pprint.pformat(fieldmap, width=sys.maxsize)))
                     continue
 
-                if not CsvLoader._filters_say_keep(filters, fieldmap):
+                if not CsvLoader._filters_say_keep(filters, fieldmap, account_name):
                     continue
 
                 # Construct Transaction object using values expected by the
@@ -131,7 +131,7 @@ class CsvLoader:
             return txns
 
     @staticmethod
-    def _filters_say_keep(filters, fieldmap):
+    def _filters_say_keep(filters, fieldmap, account_name):
         if filters == []:
             return True
 
@@ -144,14 +144,14 @@ class CsvLoader:
             elif list(f.keys()) == ['exclude']:
                 rules = f['exclude']
                 if all(fieldmap[fkey] == fval for fkey, fval in rules.items()):
-                    logging.debug("Ignoring entry matching exclude filter: {}".format(fieldmap))
+                    logging.debug(f'{account_name}: Ignoring entry matching exclude filter: {fieldmap}')
                     return False
             else:
                 raise Exception(f'Unexpected filter definition: {f.keys()}')
 
         # No rule matched => If there was at least one include rule, skip the entry
         if any(list(f.keys()) == ['include'] for f in filters):
-            logging.debug("Include filters are defined but entry did not match any of them: {}".format(fieldmap))
+            logging.debug(f'{account_name}: Include filters are defined but entry did not match any of them: {fieldmap}')
             return False
 
         return True
