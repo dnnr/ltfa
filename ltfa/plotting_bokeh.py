@@ -490,17 +490,23 @@ def prepare_figure(title, y_axis_label, y_tick_format) -> bk.plotting.figure:
 
     return figure
 
+def calc_x_range(df: pd.DataFrame):
+    # This replicates how bokeh determines the range by default (in JS). We need to do this because
+    # otherwise the BoxAnnotations used for alternatingly shading the background will affect the
+    # range calculations and insist on bringing the end of the next year into view.
+    start = df.index[0]
+    end = df.index[-1]
+    span = end - start
+    start -= span * 0.05
+    end += span * 0.05
+    return bk.models.Range1d(start, end)
+
 
 def make(accounts, annotations, analysis, file) -> None:
     # Note: NumeralTickFormatter doesn't support currency signs other than $, unfortunately. (bokeh-2.4.2)
     figure1 = prepare_figure(title='Balance', y_axis_label='Amount', y_tick_format='0a')
     figure2 = prepare_figure(title='Capital returns (% p.a.)', y_axis_label='Percentage', y_tick_format='0.00%')
     figure3 = prepare_figure(title='Spending & Savings', y_axis_label='Amount', y_tick_format='0')
-
-    # Synchronize viewports in all figures
-    figure2.x_range = figure1.x_range
-    figure3.x_range = figure1.x_range
-
 
     # stack_dataframes() has side-effects on the input, so we can only do it once
     accounts_stacked = stack_dataframes(accounts)
@@ -524,12 +530,29 @@ def make(accounts, annotations, analysis, file) -> None:
     # Suppressing mypy error, not sure how to fix it...
     vertical_crosshair = bk.models.Span(dimension='height', line_dash='dotted', line_width=1)  # type: ignore[attr-defined]
 
+    # This needs to be a single shared object for all figures, to synchronize the viewports:
+    x_range = calc_x_range(analysis.txns)
+
+    # Prepare year boundaries for alternating background shading (based on analysis; should be close enough)
+    year_starts = analysis.txns.resample('YS').size().index
+
     # Apply reasonable defaults for legends:
     for figure in figures_to_plot:
         figure.legend.location = 'top_left'
         figure.legend.click_policy = 'hide'
 
         figure.add_tools(bk.models.CrosshairTool(overlay=vertical_crosshair))
+
+        figure.x_range = x_range
+
+        for year_start in year_starts:
+            figure.add_layout(bk.models.BoxAnnotation(
+                level='underlay',
+                left=year_start,
+                right=year_start + pd.tseries.offsets.YearBegin(),
+                fill_alpha=0.2,
+                fill_color='#dadaeb' if (year_start.year % 2) else 'white'
+                ))
 
     # Disabling document validation speeds up the process a bit:
     bk.settings.settings.perform_document_validation = False
@@ -538,8 +561,11 @@ def make(accounts, annotations, analysis, file) -> None:
     # correctly. I switched to column() as a workaround, but it doesn't have
     # the merge_tools feature. TODO: Switch back as soon as possible.
     plot = bk.layouts.column(figures_to_plot, sizing_mode='stretch_both')
+
     bkp.output_file(file, title='ltfa ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     bkp.save(plot, resources=CustomResources(mode='inline'))
+
+
 
 
 class CustomResources(bk.resources.Resources):
