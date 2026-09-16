@@ -4,9 +4,9 @@ version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
     "appdirs",
-    "bokeh~=3.8.2",
+    "bokeh",
     "matplotlib",
-    "pandas~=2.3.3",
+    "pandas",
     "python-dateutil",
     "pyyaml",
     "simplejson",
