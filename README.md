@@ -11,14 +11,13 @@ In order to compensate for a highly fragmented accounts landscape, it is able to
 - Interactive Bokeh dashboard
 
 ## Installation
-- Run `pipenv sync` to prepare virtualenv with dependencies
-- Activate the environment with `pipenv shell` or prefix commands with `pipenv run`.
+- Run `uv sync --locked` to prepare virtualenv with dependencies
 
 ## Usage
 - Maintain a configuration file (defaults to `~/.config/ltfa/ltfa.yaml`).
 - Example commands:
-  - `pipenv run python ltfa.py --config path/to/config.yaml -B ltfa.html`
-  - `pipenv run python ltfa.py --config path/to/config.yaml -I investment-report.txt`
+  - `uv run python ltfa.py --config path/to/config.yaml -B ltfa.html`
+  - `uv run python ltfa.py --config path/to/config.yaml -I investment-report.txt`
 
 ## Configuration
 There is currently no example configuration available, but test scenarios provide a rough idea.

@@ -13,13 +13,10 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: pipenv sync -v --categories "packages dev-packages test"
-      - run:
-          name: Verify Pipfile.lock
-          command: pipenv verify
+          command: uv sync --locked
       - run:
           name: Run tests
-          command: pipenv run pytest
+          command: uv run pytest
 
   check-single-commit:
     docker:

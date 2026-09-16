@@ -1,0 +1,27 @@
+[project]
+name = "ltfa"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "appdirs",
+    "bokeh~=3.8.2",
+    "matplotlib",
+    "pandas~=2.3.3",
+    "python-dateutil",
+    "pyyaml",
+    "simplejson",
+]
+
+[dependency-groups]
+dev = [
+    "mypy",
+    "pytest",
+    "testfixtures",
+    "types-appdirs",
+    "types-python-dateutil",
+    "types-pyyaml",
+    "types-simplejson",
+]
+
+[tool.uv]
+package = false
