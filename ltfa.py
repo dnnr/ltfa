@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 
-from pprint import pprint
-from pprint import pformat
-
 import sys
 import logging
 
 import ltfa.util
 from ltfa.util import LtfaError
-from ltfa.util import ConfigError
 
 
 def main():
