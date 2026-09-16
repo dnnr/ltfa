@@ -6,6 +6,7 @@ import sys
 
 from decimal import Decimal
 from operator import attrgetter
+from typing import Any
 
 from ltfa.transaction import Transaction
 from ltfa.util import LtfaError
@@ -51,7 +52,7 @@ class CsvLoader:
         with open(filepath, 'r', errors='replace') as csvfile:
             delimiter = formatcfg.get('delimiter') or None
 
-            dialect = 'excel'
+            dialect: type[csv.Dialect] = csv.excel
             has_header = False
             if delimiter != ';':
                 # The sniffer has trouble with semicolons
@@ -80,7 +81,7 @@ class CsvLoader:
             txns = []
             for row in list(csvreader)[1 if has_header else 0:]:
                 # Convert row to field map according to specified column indices.
-                fieldmap = dict()
+                fieldmap: dict[str, Any] = dict()
                 for key in formatcfg['columns'].keys():
                     colidx = colmap[formatcfg['columns'][key]]
                     fieldmap[key] = row[colidx]

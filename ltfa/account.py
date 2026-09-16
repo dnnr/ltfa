@@ -334,7 +334,7 @@ class Account:
                 # there's enough balance available.
                 ballimits = self._txndateslice(self.txns, interdates[0], interdates[-1])
 
-                interpol_txns = []
+                interpol_txns: list[Transaction] = []
                 for checkp_i, nextinter_date in enumerate(interdates):
                     nextinter_val = diff2distribute / (numinterpoints - checkp_i)
 
