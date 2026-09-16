@@ -25,3 +25,6 @@ dev = [
 
 [tool.uv]
 package = false
+
+[tool.mypy]
+files = ["ltfa", "tests"]
