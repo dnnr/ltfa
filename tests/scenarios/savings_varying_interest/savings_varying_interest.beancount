@@ -1,0 +1,134 @@
+option "title" "ltfa"
+option "operating_currency" "EUR"
+
+2010-12-31 open Assets:Investment:SomeSavingsAcc EUR
+2010-12-31 open Assets:Transfers EUR
+2010-12-31 open Equity:Opening-Balances EUR
+2010-12-31 open Expenses:Uncategorized EUR
+2010-12-31 open Income:CapitalGains EUR
+2010-12-31 open Income:Salary EUR
+2010-12-31 open Income:Uncategorized EUR
+
+2010-12-31 * ""
+  Assets:Investment:SomeSavingsAcc              1000.00 EUR
+  Assets:Transfers                             -1000.00 EUR
+
+2011-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                50.00 EUR
+  Income:CapitalGains                            -50.00 EUR
+
+2012-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                52.50 EUR
+  Income:CapitalGains                            -52.50 EUR
+
+2013-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                55.13 EUR
+  Income:CapitalGains                            -55.13 EUR
+
+2014-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                57.88 EUR
+  Income:CapitalGains                            -57.88 EUR
+
+2015-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                60.77 EUR
+  Income:CapitalGains                            -60.77 EUR
+
+2016-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                63.82 EUR
+  Income:CapitalGains                            -63.82 EUR
+
+2017-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                67.00 EUR
+  Income:CapitalGains                            -67.00 EUR
+
+2018-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                70.39 EUR
+  Income:CapitalGains                            -70.39 EUR
+
+2019-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                73.84 EUR
+  Income:CapitalGains                            -73.84 EUR
+
+2020-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                77.56 EUR
+  Income:CapitalGains                            -77.56 EUR
+
+2021-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc               162.89 EUR
+  Income:CapitalGains                           -162.89 EUR
+
+2022-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc               179.18 EUR
+  Income:CapitalGains                           -179.18 EUR
+
+2023-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc               197.09 EUR
+  Income:CapitalGains                           -197.09 EUR
+
+2024-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc               216.81 EUR
+  Income:CapitalGains                           -216.81 EUR
+
+2025-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc               238.48 EUR
+  Income:CapitalGains                           -238.48 EUR
+
+2026-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc               262.34 EUR
+  Income:CapitalGains                           -262.34 EUR
+
+2027-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc               288.57 EUR
+  Income:CapitalGains                           -288.57 EUR
+
+2028-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc               317.42 EUR
+  Income:CapitalGains                           -317.42 EUR
+
+2029-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc               349.17 EUR
+  Income:CapitalGains                           -349.17 EUR
+
+2030-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc               384.08 EUR
+  Income:CapitalGains                           -384.08 EUR
+
+2031-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                84.50 EUR
+  Income:CapitalGains                            -84.50 EUR
+
+2032-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                86.19 EUR
+  Income:CapitalGains                            -86.19 EUR
+
+2033-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                87.91 EUR
+  Income:CapitalGains                            -87.91 EUR
+
+2034-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                89.67 EUR
+  Income:CapitalGains                            -89.67 EUR
+
+2035-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                91.46 EUR
+  Income:CapitalGains                            -91.46 EUR
+
+2036-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                93.30 EUR
+  Income:CapitalGains                            -93.30 EUR
+
+2037-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                95.16 EUR
+  Income:CapitalGains                            -95.16 EUR
+
+2038-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                97.06 EUR
+  Income:CapitalGains                            -97.06 EUR
+
+2039-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                99.00 EUR
+  Income:CapitalGains                            -99.00 EUR
+
+2040-12-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc               100.98 EUR
+  Income:CapitalGains                           -100.98 EUR

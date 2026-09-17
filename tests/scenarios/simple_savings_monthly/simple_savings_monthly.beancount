@@ -1,0 +1,494 @@
+option "title" "ltfa"
+option "operating_currency" "EUR"
+
+2009-12-01 open Assets:Investment:SomeSavingsAcc EUR
+2009-12-01 open Assets:Transfers EUR
+2009-12-01 open Equity:Opening-Balances EUR
+2009-12-01 open Expenses:Uncategorized EUR
+2009-12-01 open Income:CapitalGains EUR
+2009-12-01 open Income:Salary EUR
+2009-12-01 open Income:Uncategorized EUR
+
+2009-12-01 * ""
+  Assets:Investment:SomeSavingsAcc              1000.00 EUR
+  Assets:Transfers                             -1000.00 EUR
+
+2010-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.17 EUR
+  Income:CapitalGains                             -4.17 EUR
+
+2010-02-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.18 EUR
+  Income:CapitalGains                             -4.18 EUR
+
+2010-03-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.20 EUR
+  Income:CapitalGains                             -4.20 EUR
+
+2010-04-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.22 EUR
+  Income:CapitalGains                             -4.22 EUR
+
+2010-05-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.24 EUR
+  Income:CapitalGains                             -4.24 EUR
+
+2010-06-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.25 EUR
+  Income:CapitalGains                             -4.25 EUR
+
+2010-07-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.27 EUR
+  Income:CapitalGains                             -4.27 EUR
+
+2010-08-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.29 EUR
+  Income:CapitalGains                             -4.29 EUR
+
+2010-09-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.31 EUR
+  Income:CapitalGains                             -4.31 EUR
+
+2010-10-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.33 EUR
+  Income:CapitalGains                             -4.33 EUR
+
+2010-11-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.34 EUR
+  Income:CapitalGains                             -4.34 EUR
+
+2010-12-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.36 EUR
+  Income:CapitalGains                             -4.36 EUR
+
+2011-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.38 EUR
+  Income:CapitalGains                             -4.38 EUR
+
+2011-02-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.40 EUR
+  Income:CapitalGains                             -4.40 EUR
+
+2011-03-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.42 EUR
+  Income:CapitalGains                             -4.42 EUR
+
+2011-04-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.43 EUR
+  Income:CapitalGains                             -4.43 EUR
+
+2011-05-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.45 EUR
+  Income:CapitalGains                             -4.45 EUR
+
+2011-06-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.48 EUR
+  Income:CapitalGains                             -4.48 EUR
+
+2011-07-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.49 EUR
+  Income:CapitalGains                             -4.49 EUR
+
+2011-08-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.51 EUR
+  Income:CapitalGains                             -4.51 EUR
+
+2011-09-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.52 EUR
+  Income:CapitalGains                             -4.52 EUR
+
+2011-10-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.55 EUR
+  Income:CapitalGains                             -4.55 EUR
+
+2011-11-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.57 EUR
+  Income:CapitalGains                             -4.57 EUR
+
+2011-12-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.58 EUR
+  Income:CapitalGains                             -4.58 EUR
+
+2012-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.61 EUR
+  Income:CapitalGains                             -4.61 EUR
+
+2012-02-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.62 EUR
+  Income:CapitalGains                             -4.62 EUR
+
+2012-03-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.64 EUR
+  Income:CapitalGains                             -4.64 EUR
+
+2012-04-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.66 EUR
+  Income:CapitalGains                             -4.66 EUR
+
+2012-05-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.68 EUR
+  Income:CapitalGains                             -4.68 EUR
+
+2012-06-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.70 EUR
+  Income:CapitalGains                             -4.70 EUR
+
+2012-07-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.72 EUR
+  Income:CapitalGains                             -4.72 EUR
+
+2012-08-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.74 EUR
+  Income:CapitalGains                             -4.74 EUR
+
+2012-09-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.76 EUR
+  Income:CapitalGains                             -4.76 EUR
+
+2012-10-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.78 EUR
+  Income:CapitalGains                             -4.78 EUR
+
+2012-11-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.80 EUR
+  Income:CapitalGains                             -4.80 EUR
+
+2012-12-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.82 EUR
+  Income:CapitalGains                             -4.82 EUR
+
+2013-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.84 EUR
+  Income:CapitalGains                             -4.84 EUR
+
+2013-02-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.86 EUR
+  Income:CapitalGains                             -4.86 EUR
+
+2013-03-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.88 EUR
+  Income:CapitalGains                             -4.88 EUR
+
+2013-04-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.90 EUR
+  Income:CapitalGains                             -4.90 EUR
+
+2013-05-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.92 EUR
+  Income:CapitalGains                             -4.92 EUR
+
+2013-06-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.94 EUR
+  Income:CapitalGains                             -4.94 EUR
+
+2013-07-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.96 EUR
+  Income:CapitalGains                             -4.96 EUR
+
+2013-08-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 4.99 EUR
+  Income:CapitalGains                             -4.99 EUR
+
+2013-09-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.00 EUR
+  Income:CapitalGains                             -5.00 EUR
+
+2013-10-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.02 EUR
+  Income:CapitalGains                             -5.02 EUR
+
+2013-11-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.05 EUR
+  Income:CapitalGains                             -5.05 EUR
+
+2013-12-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.07 EUR
+  Income:CapitalGains                             -5.07 EUR
+
+2014-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.08 EUR
+  Income:CapitalGains                             -5.08 EUR
+
+2014-02-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.11 EUR
+  Income:CapitalGains                             -5.11 EUR
+
+2014-03-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.13 EUR
+  Income:CapitalGains                             -5.13 EUR
+
+2014-04-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.15 EUR
+  Income:CapitalGains                             -5.15 EUR
+
+2014-05-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.17 EUR
+  Income:CapitalGains                             -5.17 EUR
+
+2014-06-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.20 EUR
+  Income:CapitalGains                             -5.20 EUR
+
+2014-07-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.21 EUR
+  Income:CapitalGains                             -5.21 EUR
+
+2014-08-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.24 EUR
+  Income:CapitalGains                             -5.24 EUR
+
+2014-09-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.26 EUR
+  Income:CapitalGains                             -5.26 EUR
+
+2014-10-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.28 EUR
+  Income:CapitalGains                             -5.28 EUR
+
+2014-11-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.30 EUR
+  Income:CapitalGains                             -5.30 EUR
+
+2014-12-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.33 EUR
+  Income:CapitalGains                             -5.33 EUR
+
+2015-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.35 EUR
+  Income:CapitalGains                             -5.35 EUR
+
+2015-02-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.37 EUR
+  Income:CapitalGains                             -5.37 EUR
+
+2015-03-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.39 EUR
+  Income:CapitalGains                             -5.39 EUR
+
+2015-04-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.41 EUR
+  Income:CapitalGains                             -5.41 EUR
+
+2015-05-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.44 EUR
+  Income:CapitalGains                             -5.44 EUR
+
+2015-06-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.46 EUR
+  Income:CapitalGains                             -5.46 EUR
+
+2015-07-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.48 EUR
+  Income:CapitalGains                             -5.48 EUR
+
+2015-08-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.51 EUR
+  Income:CapitalGains                             -5.51 EUR
+
+2015-09-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.52 EUR
+  Income:CapitalGains                             -5.52 EUR
+
+2015-10-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.56 EUR
+  Income:CapitalGains                             -5.56 EUR
+
+2015-11-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.57 EUR
+  Income:CapitalGains                             -5.57 EUR
+
+2015-12-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.60 EUR
+  Income:CapitalGains                             -5.60 EUR
+
+2016-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.62 EUR
+  Income:CapitalGains                             -5.62 EUR
+
+2016-02-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.64 EUR
+  Income:CapitalGains                             -5.64 EUR
+
+2016-03-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.67 EUR
+  Income:CapitalGains                             -5.67 EUR
+
+2016-04-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.69 EUR
+  Income:CapitalGains                             -5.69 EUR
+
+2016-05-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.72 EUR
+  Income:CapitalGains                             -5.72 EUR
+
+2016-06-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.74 EUR
+  Income:CapitalGains                             -5.74 EUR
+
+2016-07-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.76 EUR
+  Income:CapitalGains                             -5.76 EUR
+
+2016-08-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.79 EUR
+  Income:CapitalGains                             -5.79 EUR
+
+2016-09-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.81 EUR
+  Income:CapitalGains                             -5.81 EUR
+
+2016-10-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.83 EUR
+  Income:CapitalGains                             -5.83 EUR
+
+2016-11-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.86 EUR
+  Income:CapitalGains                             -5.86 EUR
+
+2016-12-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.89 EUR
+  Income:CapitalGains                             -5.89 EUR
+
+2017-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.90 EUR
+  Income:CapitalGains                             -5.90 EUR
+
+2017-02-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.94 EUR
+  Income:CapitalGains                             -5.94 EUR
+
+2017-03-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.96 EUR
+  Income:CapitalGains                             -5.96 EUR
+
+2017-04-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 5.98 EUR
+  Income:CapitalGains                             -5.98 EUR
+
+2017-05-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.01 EUR
+  Income:CapitalGains                             -6.01 EUR
+
+2017-06-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.03 EUR
+  Income:CapitalGains                             -6.03 EUR
+
+2017-07-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.06 EUR
+  Income:CapitalGains                             -6.06 EUR
+
+2017-08-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.08 EUR
+  Income:CapitalGains                             -6.08 EUR
+
+2017-09-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.11 EUR
+  Income:CapitalGains                             -6.11 EUR
+
+2017-10-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.13 EUR
+  Income:CapitalGains                             -6.13 EUR
+
+2017-11-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.16 EUR
+  Income:CapitalGains                             -6.16 EUR
+
+2017-12-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.19 EUR
+  Income:CapitalGains                             -6.19 EUR
+
+2018-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.21 EUR
+  Income:CapitalGains                             -6.21 EUR
+
+2018-02-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.23 EUR
+  Income:CapitalGains                             -6.23 EUR
+
+2018-03-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.27 EUR
+  Income:CapitalGains                             -6.27 EUR
+
+2018-04-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.28 EUR
+  Income:CapitalGains                             -6.28 EUR
+
+2018-05-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.32 EUR
+  Income:CapitalGains                             -6.32 EUR
+
+2018-06-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.34 EUR
+  Income:CapitalGains                             -6.34 EUR
+
+2018-07-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.37 EUR
+  Income:CapitalGains                             -6.37 EUR
+
+2018-08-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.39 EUR
+  Income:CapitalGains                             -6.39 EUR
+
+2018-09-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.42 EUR
+  Income:CapitalGains                             -6.42 EUR
+
+2018-10-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.45 EUR
+  Income:CapitalGains                             -6.45 EUR
+
+2018-11-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.48 EUR
+  Income:CapitalGains                             -6.48 EUR
+
+2018-12-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.50 EUR
+  Income:CapitalGains                             -6.50 EUR
+
+2019-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.53 EUR
+  Income:CapitalGains                             -6.53 EUR
+
+2019-02-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.55 EUR
+  Income:CapitalGains                             -6.55 EUR
+
+2019-03-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.58 EUR
+  Income:CapitalGains                             -6.58 EUR
+
+2019-04-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.61 EUR
+  Income:CapitalGains                             -6.61 EUR
+
+2019-05-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.64 EUR
+  Income:CapitalGains                             -6.64 EUR
+
+2019-06-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.67 EUR
+  Income:CapitalGains                             -6.67 EUR
+
+2019-07-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.69 EUR
+  Income:CapitalGains                             -6.69 EUR
+
+2019-08-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.72 EUR
+  Income:CapitalGains                             -6.72 EUR
+
+2019-09-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.75 EUR
+  Income:CapitalGains                             -6.75 EUR
+
+2019-10-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.78 EUR
+  Income:CapitalGains                             -6.78 EUR
+
+2019-11-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.81 EUR
+  Income:CapitalGains                             -6.81 EUR
+
+2019-12-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                 6.83 EUR
+  Income:CapitalGains                             -6.83 EUR

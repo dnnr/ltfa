@@ -1,0 +1,26 @@
+option "title" "ltfa"
+option "operating_currency" "EUR"
+
+2010-01-01 open Assets:Liquidity:SomeCheckingAcc EUR
+2010-01-01 open Assets:Transfers EUR
+2010-01-01 open Equity:Opening-Balances EUR
+2010-01-01 open Expenses:Uncategorized EUR
+2010-01-01 open Income:CapitalGains EUR
+2010-01-01 open Income:Salary EUR
+2010-01-01 open Income:Uncategorized EUR
+
+2010-01-01 * "ltfa" "Initial account balance"
+  Assets:Liquidity:SomeCheckingAcc              1532.38 EUR
+  Equity:Opening-Balances                      -1532.38 EUR
+
+2010-12-13 * "Balance checkpoint"
+  Assets:Liquidity:SomeCheckingAcc              -287.93 EUR
+  Expenses:Uncategorized                         287.93 EUR
+
+2010-12-14 * "Balance checkpoint"
+  Assets:Liquidity:SomeCheckingAcc                10.00 EUR
+  Income:Uncategorized                           -10.00 EUR
+
+2010-12-15 * "Balance checkpoint"
+  Assets:Liquidity:SomeCheckingAcc                10.00 EUR
+  Income:Uncategorized                           -10.00 EUR

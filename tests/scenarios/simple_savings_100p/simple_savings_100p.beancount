@@ -1,0 +1,54 @@
+option "title" "ltfa"
+option "operating_currency" "EUR"
+
+2010-01-01 open Assets:Investment:SomeSavingsAcc EUR
+2010-01-01 open Assets:Transfers EUR
+2010-01-01 open Equity:Opening-Balances EUR
+2010-01-01 open Expenses:Uncategorized EUR
+2010-01-01 open Income:CapitalGains EUR
+2010-01-01 open Income:Salary EUR
+2010-01-01 open Income:Uncategorized EUR
+
+2010-01-01 * ""
+  Assets:Investment:SomeSavingsAcc              1000.00 EUR
+  Assets:Transfers                             -1000.00 EUR
+
+2011-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc              1000.00 EUR
+  Income:CapitalGains                          -1000.00 EUR
+
+2012-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc              2000.00 EUR
+  Income:CapitalGains                          -2000.00 EUR
+
+2013-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc              4000.00 EUR
+  Income:CapitalGains                          -4000.00 EUR
+
+2014-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc              8000.00 EUR
+  Income:CapitalGains                          -8000.00 EUR
+
+2015-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc             16000.00 EUR
+  Income:CapitalGains                         -16000.00 EUR
+
+2016-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc             32000.00 EUR
+  Income:CapitalGains                         -32000.00 EUR
+
+2017-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc             64000.00 EUR
+  Income:CapitalGains                         -64000.00 EUR
+
+2018-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc            128000.00 EUR
+  Income:CapitalGains                        -128000.00 EUR
+
+2019-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc            256000.00 EUR
+  Income:CapitalGains                        -256000.00 EUR
+
+2020-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc            512000.00 EUR
+  Income:CapitalGains                        -512000.00 EUR

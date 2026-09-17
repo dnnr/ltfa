@@ -1,0 +1,31 @@
+option "title" "ltfa"
+option "operating_currency" "EUR"
+
+2009-01-01 open Assets:Investment:FirstTxnIsGain EUR
+2009-01-01 open Assets:Investment:SomeBadLongtermInvestment EUR
+2009-01-01 open Assets:Transfers EUR
+2009-01-01 open Equity:Opening-Balances EUR
+2009-01-01 open Expenses:Uncategorized EUR
+2009-01-01 open Income:CapitalGains EUR
+2009-01-01 open Income:Salary EUR
+2009-01-01 open Income:Uncategorized EUR
+
+2009-01-01 * ""
+  Assets:Investment:SomeBadLongtermInvestment      1000.00 EUR
+  Assets:Transfers                             -1000.00 EUR
+
+2010-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeBadLongtermInvestment        10.00 EUR
+  Income:CapitalGains                            -10.00 EUR
+
+2010-01-01 * ""
+  Assets:Investment:FirstTxnIsGain              1000.00 EUR
+  Income:CapitalGains                          -1000.00 EUR
+
+2011-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeBadLongtermInvestment        10.00 EUR
+  Income:CapitalGains                            -10.00 EUR
+
+2012-01-01 * "Balance checkpoint"
+  Assets:Investment:SomeBadLongtermInvestment        10.00 EUR
+  Income:CapitalGains                            -10.00 EUR

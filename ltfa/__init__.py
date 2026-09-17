@@ -14,6 +14,7 @@ from types import SimpleNamespace
 from typing import Any
 
 from ltfa.account import Account, Transaction
+from ltfa import beancount_export
 from ltfa import plotting_bokeh
 from ltfa.analysis import Analysis
 from ltfa.util import LtfaError
@@ -82,6 +83,10 @@ def run(args) -> None:
         with file_or_stdout(args.monthly_overview) as fh:
             analysis.make_monthly_overview(fh, args.month_for_overview)
 
+    if args.beancount:
+        with file_or_stdout(args.beancount) as fh:
+            beancount_export.make(analysis.txns, fh)
+
     if args.bokeh:
         plotting_bokeh.make(accounts_df, annotations, analysis, args.bokeh)
 
@@ -112,6 +117,7 @@ def parse_args(args) -> argparse.Namespace:
     )
 
     argparser.add_argument('-B', '--bokeh', type=Path, metavar='FILE', help='Write bokeh visualization to this file')
+    argparser.add_argument('-L', '--beancount', nargs='?', type=Path, metavar='FILE', const='/dev/stdout', help='Write beancount ledger (for fava) to this file (default: stdout)')
     argparser.add_argument('-I', '--investment-report', nargs='?', type=Path, metavar='FILE', const='/dev/stdout', help='File to write investment report into (default: stdout)')
 
     argparser.add_argument('-M', '--monthly-overview', nargs='?', type=Path, metavar='FILE', const='/dev/stdout', help='File to write montly report into (default: stdout)')

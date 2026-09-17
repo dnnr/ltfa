@@ -1,4 +1,5 @@
 import logging
+import beancount.loader
 import testfixtures
 import pytest
 from pathlib import Path
@@ -48,10 +49,14 @@ def test_real_data_snapshot(tmpdir, request, scenario):
     investment_report = tmpdir / 'investment_report.txt'
     assert not investment_report.exists()
 
+    ledger = tmpdir / 'ledger.beancount'
+    assert not ledger.exists()
+
     args = ltfa.parse_args([
         '--config', str(scenario_dir / f'{scenario}.conf'),
         '--bokeh', str(bokeh_html),
         '-I', str(investment_report),
+        '-L', str(ledger),
     ])
 
     with testfixtures.LogCapture(level=logging.INFO) as log_capture:
@@ -77,6 +82,18 @@ def test_real_data_snapshot(tmpdir, request, scenario):
         return
 
     assert bokeh_html.exists()
+
+    #  Uncomment to rewrite beancount snapshot:
+    #  shutil.copyfile(ledger, scenario_dir / f"{scenario}.beancount")
+
+    with open(scenario_dir / f'{scenario}.beancount', "r") as left:
+        with open(ledger, 'r') as right:
+            assert left.readlines() == right.readlines()
+
+    # Catches what eyeballing a snapshot does not: bad account names,
+    # unbalanced entries, entries before their account's open directive.
+    _, errors, _ = beancount.loader.load_file(str(ledger))
+    assert not errors
 
     #  Uncomment to rewrite report snapshot:
     #  if investment_report.exists():

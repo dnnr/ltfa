@@ -9,6 +9,7 @@ In order to compensate for a highly fragmented accounts landscape, it is able to
 - Detecting and tracking inter-account transactions
 - Tracking salary, savings, and capital gains with rolling averages to expose short- and long-term trends
 - Interactive Bokeh dashboard
+- Beancount export, for browsing the consolidated ledger in [fava](https://beancount.github.io/fava/)
 
 ## Installation
 - Run `uv sync --locked` to prepare virtualenv with dependencies
@@ -18,6 +19,7 @@ In order to compensate for a highly fragmented accounts landscape, it is able to
 - Example commands:
   - `uv run python ltfa.py --config path/to/config.yaml -B ltfa.html`
   - `uv run python ltfa.py --config path/to/config.yaml -I investment-report.txt`
+  - `uv run python ltfa.py --config path/to/config.yaml -L ltfa.beancount && uvx fava ltfa.beancount`
 
 ## Configuration
 There is currently no example configuration available, but test scenarios provide a rough idea.

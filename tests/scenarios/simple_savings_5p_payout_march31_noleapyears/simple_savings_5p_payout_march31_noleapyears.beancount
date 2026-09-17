@@ -1,0 +1,22 @@
+option "title" "ltfa"
+option "operating_currency" "EUR"
+
+2013-03-31 open Assets:Investment:SomeSavingsAcc EUR
+2013-03-31 open Assets:Transfers EUR
+2013-03-31 open Equity:Opening-Balances EUR
+2013-03-31 open Expenses:Uncategorized EUR
+2013-03-31 open Income:CapitalGains EUR
+2013-03-31 open Income:Salary EUR
+2013-03-31 open Income:Uncategorized EUR
+
+2013-03-31 * ""
+  Assets:Investment:SomeSavingsAcc              1000.00 EUR
+  Assets:Transfers                             -1000.00 EUR
+
+2014-03-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                50.00 EUR
+  Income:CapitalGains                            -50.00 EUR
+
+2015-03-31 * "Balance checkpoint"
+  Assets:Investment:SomeSavingsAcc                52.50 EUR
+  Income:CapitalGains                            -52.50 EUR
