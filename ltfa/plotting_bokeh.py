@@ -184,18 +184,16 @@ def add_balances_plot(figure, custom_js_hover, accounts, accounts_stacked, annot
     cmap_line_color = bk.transform.factor_cmap('account', palette=list(markers_line_color_map.values()), factors=list(markers_line_color_map.keys()))
     marker_glyphs = [figure.scatter(source=bk.models.ColumnDataSource(tooltip_datas_concat), x='date', y='top', color=cmap_fill_color, line_color=cmap_line_color, fill_alpha=0.7, line_alpha=0.7, size=8)]
 
-    # Prepare data for CDSView: Merge all dailies into a single DF, with a column holding the
-    # account index (= dict key):
-    all_dailies_df = pd.concat(all_dailies_map, names=["account_idx"]).reset_index(level=0)
-    all_dailies_cds = bk.models.ColumnDataSource(all_dailies_df)
-
-    # There's a size benefit in using a single CDS for all accounts but we still need to draw
-    # one-by-one because there is nothing like MultiLine for Step/VAreaStep:
-    for name in all_dailies_map.keys():
-        view = bk.models.CDSView(filter=bk.models.GroupFilter(column_name="account_idx", group=name))
+    # The most space-efficient way to draw each account would be to have a single, shared CDS with
+    # one GroupFilter-based CDSView per account. Unfortunately, views do not really work with glyps
+    # that are supposed to be connected, like line or step. It used to work until 3.9.2, probably by
+    # accident, and broke in 3.10.0. This might be related: https://github.com/bokeh/bokeh/issues/7070
+    # If there's every something like MultiLine for Step and VAreaStep, we might want to use that here.
+    for name, df in all_dailies_map.items():
         color = line_color_map[name]
-        figure.varea_step(source=all_dailies_cds, view=view, x='date', y1='bottom', y2='top', step_mode='after', color=color, fill_alpha=0.2)
-        figure.step(source=all_dailies_cds, view=view, x='date', y='top', mode='after', color=color, line_width=1)
+        cds = bk.models.ColumnDataSource(df)
+        figure.varea_step(source=cds, x='date', y1='bottom', y2='top', step_mode='after', color=color, fill_alpha=0.2)
+        figure.step(source=cds, x='date', y='top', mode='after', color=color, line_width=1)
 
     # The tooltips are a bit hacky: We draw the same one for every marker (balances and every
     # transaction), but use custom formatter to hide the parts that are not applicable.
