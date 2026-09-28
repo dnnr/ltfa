@@ -392,6 +392,7 @@ class Account:
             source = os.path.expanduser(source)
             sources = glob.glob(source)
             for srcname in sources:
+                logging.debug(f"{self.name}: Reading JSON balance file: {srcname}")
                 with open(srcname, 'r') as sfh:
                     jdata = simplejson.load(sfh, use_decimal=True)
                     date_key = jbcfg['keys']['date']
